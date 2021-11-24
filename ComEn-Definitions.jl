@@ -1,6 +1,5 @@
 using Random  # For sample(), etc.
 using StatsBase  # For mean()
-using Distributed  # For parallel computing
 
 #=====AGENT TYPES, STRATEGIES AND CONSTRUCTORS==========#
 abstract type Agent end
@@ -387,64 +386,6 @@ end
 
 # STUFF FOR ARROW DIAGRAMS
 
-function arrowStats(list::Vector{<:Agent})
-    map(strat-> count(y ->  y.strategy == strat,list),agentStrategyNames)
-    # count( x->x.cooperate==true&&typeof(x) ,list)
-end
-
-# function choose(list::Vector{<:Agent})
-#     fvec = fitnessVector(list,agentStrategies)  # Vector of ["strategyname", fitness] pairs for all strategies
-#     indexToRevise = sample(1:length(list))  # Uniformly randomly draw an agent to revise her strategy
-#     type = typeof(list[indexToRevise]) # Type of agent that revises
-#     # Get fitness vector for strategies of that type
-#     stratSet = agentStrategies[findall(x->x.agentType <:type,agentStrategies)]  # Vector of strategies of the drawn type
-#     fitvec = map(s->fvec[findfirst(x->x[1]==s.strategyName,fvec)][2],stratSet)  # Vector of fitnesses to these strategies
-#     if mistake(ε)  # Mutation
-#         newAgent = agent(sample(stratSet))  # Sample a strategy with equal probability across all available strategies
-#     else  # (Noisy?) best response
-#         if η == 0. # exact best response
-#             fitvec = map(x-> x == maximum(fitvec),fitvec)  # If using best response, return a vector of 0s and a 1
-#         else
-#             fitvec = map(x-> exp(x/η),fitvec)
-#         end
-#         newAgent = agent(sample(stratSet, Weights(fitvec)))
-#     end
-    
-#     pop2 = copy(list)
-#     # println("$(fvec) Killed a $(list[killIndex].strategy). Gave birth to a $(newAgent.strategy).")
-#     pop2[indexToRevise] = newAgent
-#     # println("Indeed, the new agent is a $(list[killIndex].strategy).")
-#     return pop2
-# end
-
-# Take a population ** that has fitnesses ** and calculate position and direction/length of arrow
-function arrow(list::Vector{<:Agent})
-    fitvec = getindex.(fitnessVector(list,agentStrategies),2)  # Vector fitnesses for all strategies
-    pvec = [-Inf,-Inf,-Inf,-Inf]  # Vector to store choice probabilities for each profession
-    if η == 0. # exact best response
-        pvec[1:2] = map(x-> x == maximum(fitvec[1:2]),fitvec[1:2])  # If using best response, return a vector of 0s and a 1
-        pvec[3:4] = map(x-> x == maximum(fitvec[3:4]),fitvec[3:4])  # If using best response, return a vector of 0s and a 1
-    else
-        S = sum(map(x-> exp(x/η),fitvec[1:2]))
-        pvec[1:2] = map(x-> exp(x/η)/S,fitvec[1:2])  # If using best response, return a vector of 0s and a 1
-        S = sum(map(x-> exp(x/η),fitvec[3:4]))
-        pvec[3:4] = map(x-> exp(x/η)/S,fitvec[3:4])  # If using best response, return a vector of 0s and a 1
-    end
-    return pvec
-end
-
-function probVec(list::Vector{<:Agent}, N::Int)
-    vec = zeros(4)
-    i = 0
-    while i < N
-        i += 1
-        dummypop = copy(list)
-        simulate!(dummypop)
-        vec += arrow(dummypop)/N
-    end
-    return vec
-end
-
 # Function that takes a population definition and gives the arrow that should be plotted at the relevant point.
 function calcArrow(pop::Vector{Vector{Any}})
     population = makePopulation(pop)  # Initialize population
@@ -452,11 +393,48 @@ function calcArrow(pop::Vector{Vector{Any}})
     agentStrategies = map(x->stratByName(x[1],allStrategies),pop)
 
     pr = arrowStats(population)  # Vector of individuals in each strategy
-    pr = map(s-> s/sum(pr),pr)
+    pr = map(s-> s/sum(pr),pr)  # Vector of fractions of each strategy in the total population
     q = probVec(population,N)  # Vector of choice probabilities for each strategy
+    
     x = pr[1]/(pr[1]+pr[2])
     y = pr[3]/(pr[3]+pr[4])
     u = (pr[2]*q[1]-pr[1]*q[2])/(pr[1]+pr[2])
-    vi = (pr[4]*q[3]-pr[3]*q[4])/(pr[3]+pr[4])
-    return [x,y,u,vi]
+    z = (pr[4]*q[3]-pr[3]*q[4])/(pr[3]+pr[4])
+    # u = (q[1]-q[2])/(pr[1]+pr[2])
+    # z = (q[3]-q[4])/(pr[3]+pr[4])
+    return [x,y,u,z]
+end
+
+# Simulate populations N times and get average choice probabilities for each profession
+function probVec(list::Vector{<:Agent}, N::Int)
+    fitvec = zeros(4)
+    i = 0
+    while i < N
+        i += 1
+        dummypop = copy(list)
+        simulate!(dummypop)
+        fitvec += getindex.(fitnessVector(list,agentStrategies),2)/N  # Vector fitnesses for all strategies
+        # vec += choiceProb(dummypop)/N  # Take averages
+    end
+    vec = choiceProb(fitvec)
+    return vec
+end
+
+# Take a simulated population (i.e.that HAS fitnesses) and calculate choice probabilities for each profession
+function choiceProb(fitvec::Vector{<:Real})
+    pvec = [-Inf,-Inf,-Inf,-Inf]  # Vector to store choice probabilities for each profession
+    if η == 0. # exact best response
+        pvec[1:2] = map(x-> x == maximum(fitvec[1:2]),fitvec[1:2])  # If using best response, return a vector of 0s and a 1 for producers
+        pvec[3:4] = map(x-> x == maximum(fitvec[3:4]),fitvec[3:4])  # The same for enforcers
+    else  # Logit noise in choice
+        S = sum(map(x-> exp(x/η),fitvec[1:2]))
+        pvec[1:2] = map(x-> exp(x/η)/S,fitvec[1:2])
+        S = sum(map(x-> exp(x/η),fitvec[3:4]))
+        pvec[3:4] = map(x-> exp(x/η)/S,fitvec[3:4])
+    end
+    return pvec
+end
+
+function arrowStats(list::Vector{<:Agent})
+    map(strat-> count(y ->  y.strategy == strat,list),agentStrategyNames)
 end

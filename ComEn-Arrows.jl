@@ -1,7 +1,7 @@
+using Distributed
+using Plots
 @everywhere include("ComEn-Definitions.jl") # Definitions of our types and methods
 @everywhere include("ComEn-Parameters.jl") # Parameters for the simulation
-
-using Plots
 
 # For parallel computing
 # How many processes we should use for parallel computing?
@@ -16,14 +16,16 @@ end
 #  Check that parameters do not give negative payoffs
 # warning()
 
-np = 100
-prodstep = 10
-ne = 100
-enfstep = 10
+np = 160  # number of producers
+prodstep = np/10  # step increment (grid) for producers
+ne = 40  # number of enforcers
+enfstep = ne/10  # step increment (grid) for enforcers
 
-pops = []
+pops = []  # Vector to hold populations
 for CP = prodstep:prodstep:np-prodstep
     for CE = enfstep:enfstep:ne-enfstep
+# for CP = 4:4:16
+#          for CE = 1:1:4
         pop=[
             ["cooperator", CP],
             ["defector", np - CP],
@@ -38,10 +40,10 @@ end
 
 results = pmap(calcArrow,pops)
 
-xx,yy,uu,vv = map(x->getindex.(results,x),1:4);
+xx,yy,uu,zz = map(x->getindex.(results,x),1:4);
 
 ##
 # Scale down the arrows (adjust so that they don't overlap)
 scale = 10
 
-quiver(xx, yy, quiver=(uu/scale,vv/scale),xlims=[0,1],ylims=[0,1])
+quiver(xx, yy, quiver=(uu/scale,zz/scale),xlims=[0,1],ylims=[0,1])

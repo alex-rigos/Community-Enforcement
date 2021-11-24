@@ -14,7 +14,7 @@ const w = 2.  # baseline payoff
 const τ = .25
 # Punishment
 const v = 0.  # Cost of punishment to enforcer ***( v < τ w )***
-const f = 0.25  # Fixed cost of being able to punish ``correctly''
+const f = .5  # Fixed cost of being able to punish ``correctly''
 const p = 2.  # Producer's loss from being punished
 
 # Attack
@@ -31,7 +31,10 @@ const probAttackMistake = μ
 
 #---------------------------EVOLUTION------------------------------------------
 const η = 0.  # Logit parameter (weight of fitness f is exp(f/η)). For exact best response, set η = 0.
-const ε = 0.1  # Mutation probability (probability to choose uniformly randomly)
+const ε = 0.  # Mutation probability (probability to choose uniformly randomly)
+
+
+#------------------ These things don't matter for arrow plots -------------------
 
 const generations = 1000
 

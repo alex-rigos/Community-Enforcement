@@ -1,5 +1,6 @@
 using Random  # For sample(), etc.
 using StatsBase  # For mean()
+using Plots
 
 #=====AGENT TYPES, STRATEGIES AND CONSTRUCTORS==========#
 abstract type Agent end
@@ -47,8 +48,8 @@ end
 
 const allStrategies = [
     Strategy(strategyName = "cooperator", agentType = Producer, cooperate = true),
-    Strategy(strategyName = "defector", agentType = Producer, cooperate = false),
     Strategy(strategyName = "peacekeeper", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->enf2.karmaI>0),
+    Strategy(strategyName = "defector", agentType = Producer, cooperate = false),    
     Strategy(strategyName = "clubby", agentType = Enforcer, punishesDefectors = false, attacksif = enf2::Enforcer->enf2.karmaII>0),
     Strategy(strategyName = "shortsighted", agentType = Enforcer, punishesDefectors = false, attacksif = enf2::Enforcer->true),
     Strategy(strategyName = "aggressor", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->true),
@@ -367,8 +368,8 @@ end
 # end
 
 function warning()
-    if ! ( 0 ≤ l + f ≤ 2*(τ*w -v) )
-        println("******* WARNING: NEGATIVE PAYOFFS ARE POSSIBLE *******")
+    if  v > τ*w
+        error("*******  NEGATIVE PAYOFFS ARE POSSIBLE *******")
     end
 end
 
@@ -420,7 +421,7 @@ function probVec(list::Vector{<:Agent}, N::Int)
     return vec
 end
 
-# Take a simulated population (i.e.that HAS fitnesses) and calculate choice probabilities for each profession
+# Take a fitness vector and calculate choice probabilities for each profession
 function choiceProb(fitvec::Vector{<:Real})
     pvec = [-Inf,-Inf,-Inf,-Inf]  # Vector to store choice probabilities for each profession
     if η == 0. # exact best response
@@ -437,4 +438,26 @@ end
 
 function arrowStats(list::Vector{<:Agent})
     map(strat-> count(y ->  y.strategy == strat,list),agentStrategyNames)
+end
+
+# For time averages
+
+function ourPlot(parameters::Vector{<:Real})
+    warning()
+    gen=0  # Start counting generations
+    data = zeros(generations,length(stratVector))  # This is where the data is stored
+    global l,f = parameters
+    while gen<generations
+        gen += 1
+        simulate!(population)
+        selection!(population,agentsToRevise,revisionVector)
+        data[gen,:]=stats(population)
+    end
+
+    data1 = data[gensToIgnore+1:end, setdiff(1:end,notIncluded)]
+    stratVector1 = stratVector[setdiff(1:end,notIncluded)]
+    avg = mean(eachrow(data1))
+    barplot = bar(reshape(stratVector1,1,length(stratVector1)),reshape(avg/length(population),1,length(stratVector1)),title="l = $(l), f = $(f)", labels = stratVector1,bar_width = 1,legend = false,ylims=[0,1])
+    areap = areaplot((gensToIgnore+1:generations-gensToIgnore)/1000,data1,label="l = $(l), f = $(f)", stacked=true,normalized=false,legend=false)
+    return plot(areap,barplot,layout = (2,1))
 end

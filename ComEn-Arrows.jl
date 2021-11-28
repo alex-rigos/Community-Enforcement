@@ -1,25 +1,26 @@
 using Distributed
 using Plots
+
+# How many threads should be used for parallel computing?
+num_procs = 8
+if nworkers() < min(length(Sys.cpu_info()),num_procs)
+    addprocs(min(length(Sys.cpu_info()),num_procs) - nworkers())
+end
+
+# Distribute definitions to worker threads
 @everywhere include("ComEn-Definitions.jl") # Definitions of our types and methods
 @everywhere include("ComEn-Parameters.jl") # Parameters for the simulation
-
-# For parallel computing
-# How many processes we should use for parallel computing?
-num_procs = 8
-if nprocs() <= min(length(Sys.cpu_info()),num_procs) - nprocs()
-    addprocs(min(length(Sys.cpu_info()),num_procs) - nprocs())
-end
 
 # How many times to sample for each point?
 @everywhere N = 500
 
 #  Check that parameters do not give negative payoffs
-# warning()
+warning()
 
 np = 160  # number of producers
-prodstep = np/10  # step increment (grid) for producers
+prodstep = np/20  # step increment (grid) for producers
 ne = 40  # number of enforcers
-enfstep = ne/10  # step increment (grid) for enforcers
+enfstep = ne/20  # step increment (grid) for enforcers
 
 pops = []  # Vector to hold populations
 for CP = prodstep:prodstep:np-prodstep
@@ -44,6 +45,6 @@ xx,yy,uu,zz = map(x->getindex.(results,x),1:4);
 
 ##
 # Scale down the arrows (adjust so that they don't overlap)
-scale = 10
+scale = 20
 
 quiver(xx, yy, quiver=(uu/scale,zz/scale),xlims=[0,1],ylims=[0,1])

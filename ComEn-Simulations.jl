@@ -12,12 +12,12 @@ dataToPlot = zeros(generations,length(stratVector))  # This is where the data is
 
 while gen<generations
     gen += 1
-    if gen%100==0
+    if gen%1000==0
         println("Generation $(gen)")
     end
     simulate!(population)
     selection!(population,agentsToRevise,revisionVector)
-    if gen%100==0
+    if gen%1000==0
         println(stats(population))
     end
     dataToPlot[gen,:]=stats(population)

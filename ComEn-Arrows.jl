@@ -47,4 +47,6 @@ xx,yy,uu,zz = map(x->getindex.(results,x),1:4);
 # Scale down the arrows (adjust so that they don't overlap)
 scale = 20
 
-quiver(xx, yy, quiver=(uu/scale,zz/scale),xlims=[0,1],ylims=[0,1])
+quiver(xx, yy, quiver=(uu/scale,zz/scale),xlims=[0,1],ylims=[0,1], 
+xlabel="$(agentStrategyNames[1]) vs. $(agentStrategyNames[2])",
+ylabel="$(agentStrategyNames[3]) vs. $(agentStrategyNames[4])")

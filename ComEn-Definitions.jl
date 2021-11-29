@@ -466,7 +466,15 @@ function ourPlot(parameters::Vector{<:Real})
     data1 = data[gensToIgnore+1:end, setdiff(1:end,notIncluded)]
     stratVector1 = stratVector[setdiff(1:end,notIncluded)]
     avg = mean(eachrow(data1))
-    barplot = bar(reshape(stratVector1,1,length(stratVector1)),reshape(avg/length(population),1,length(stratVector1)),title="l = $(l), f = $(f)", labels = stratVector1,bar_width = 1,legend = false,ylims=[0,1])
+    paramString = "l=$(l) f=$(f)"
+    titleString = string(model,": ",paramString)
+    barplot = bar(reshape(stratVector1,1,length(stratVector1)),reshape(avg/length(population),1,length(stratVector1)),title=titleString, labels = stratVector1,bar_width = 1,legend = false,ylims=[0,1])
     areap = areaplot((gensToIgnore+1:generations-gensToIgnore)/1000,data1,label="l = $(l), f = $(f)", stacked=true,normalized=false,legend=false)
-    return plot(areap,barplot,layout = (2,1))
+    plot(areap,barplot,layout = (2,1))
+    savefig("./Figs/$(model)-model/time-averages/$(paramString).pdf")
+end
+
+function string_as_varname(s::AbstractString,v::Any)
+    s = Symbol(s)
+    @eval (global ($s)=($v))
 end

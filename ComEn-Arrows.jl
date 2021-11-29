@@ -19,7 +19,7 @@ for model in ["StressTest"]
         modelString = "Baseline"
         stressParams = [
             ["δ",.7],
-            ["maxKarmaI",3],
+            ["κ",3],
             ["μ",.04],
             ["ρ",.02],
             ["η",.2],

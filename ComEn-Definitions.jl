@@ -238,13 +238,13 @@ function updateKarma!(enfList::Vector{Int},list::Vector{<:Agent})
     checkType.(enfList,Ref(Enforcer),Ref(list))
     for enf in enfList
         if !list[enf].okWithRuleI
-            list[enf].karmaI = maxKarmaI
+            list[enf].karmaI = κ
             # if list[enf].strategy == "peacekeeper"
             #     println("Why am I being punished?!")
             # end
         end
         if !list[enf].okWithRuleII
-            list[enf].karmaII = maxKarmaII
+            list[enf].karmaII = κ2
         end
     end
 end

@@ -2,8 +2,8 @@
 #--Continuation probability--
 δ = 0.9  # With what probability the stage game repeats
 #--Karma--
-maxKarmaI = 10  # For how many rounds should a typeI transgressor be attacked?
-maxKarmaII = 1  # For how many rounds should a typeII transgressor be attacked?
+κ = 10  # For how many rounds should a typeI transgressor be attacked?
+κ2 = 1  # For how many rounds should a typeII transgressor be attacked?
  
 #---------PAYOFFS------
 #--Production (PD between producers)--

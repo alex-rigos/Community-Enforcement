@@ -79,6 +79,7 @@ function simulate!(population::Vector{<:Agent})
     #=============SUPERGAME=====================#
     oneMoreRound = true
     while oneMoreRound
+        awardBackgroundFitness!(population)
         matchStep12!(population)
         matchStep3!(population)
         redemption!(population)
@@ -90,6 +91,14 @@ function simulate!(population::Vector{<:Agent})
 end
 
 #===========GAME STUFF===========================#
+# Give producers background fitness
+function awardBackgroundFitness!(list::Vector{<:Agent})
+    producers = getAgentIndices(list,Producer)
+    for prod in producers
+        list[prod].payoff += w
+    end
+end
+
 # Match pairs of producers to random enforcers
 function matchStep12!(list::Vector{<:Agent})
     producerList = shuffle(getAgentIndices(list,Producer))  # Shuffle producers 
@@ -133,19 +142,19 @@ function production!(prod1::Int,prod2::Int,list::Vector{<:Agent})
 
     if list[prod1].cooperated
         if list[prod2].cooperated
-            list[prod1].payoff = b - c + w
-            list[prod2].payoff = b - c + w
+            list[prod1].payoff += b - c 
+            list[prod2].payoff += b - c
         else
-            list[prod1].payoff = w - c
-            list[prod2].payoff = w + b
+            list[prod1].payoff += - c
+            list[prod2].payoff += b
         end
     else
         if list[prod2].cooperated
-            list[prod1].payoff = w + b
-            list[prod2].payoff = w - c
+            list[prod1].payoff += 0 + b
+            list[prod2].payoff += 0 - c
         else
-            list[prod1].payoff = w
-            list[prod2].payoff = w
+            list[prod1].payoff += 0
+            list[prod2].payoff += 0
         end
     end
 end

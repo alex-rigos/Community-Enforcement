@@ -102,7 +102,7 @@ for model in ["StressTest"]
                 dir = "./Figs/$(model)-model/arrow-plots/"
                 if model == "StressTest"
                     dir = "./Figs/$(model)-model/$(par[1])/arrow-plots/"
-                    # mkpath(dir)
+                    mkpath(dir)
                 end
                 savefig("$(dir)/$(paramString).pdf")
             end

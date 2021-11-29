@@ -18,13 +18,13 @@ for model in ["StressTest"]
     if model == "StressTest"
         modelString = "Baseline"
         stressParams = [
+            ["revisionVector",[[Agent,.33],[Enforcer,0.33],[Producer,.34]]],
             ["δ",.7],
             ["κ",3],
             ["μ",.04],
             ["ρ",.02],
             ["η",.2],
             ["ε",.2],
-            ["revisionVector",[[Agent,.33],[Enforcer,0.33],[Producer,.34]]]
         ]
     else
         modelString = model 
@@ -42,6 +42,9 @@ for model in ["StressTest"]
             @everywhere string_as_varname($(par[1]),$(par[2]))
             println("$(par[1])=$(eval(Symbol(par[1])))")
             addedString=" $(par[1])=$(par[2])"
+            if par[1] == "revisionVector"
+                addedString=" revVec=$(getindex.(par[2],2))"
+            end
         end
         for l = 2.:1.:4
             for f = .25:.25:.75
@@ -49,7 +52,7 @@ for model in ["StressTest"]
                 @everywhere global l = $(l)
 
                 # How many times to sample for each point?
-                @everywhere N = 5
+                @everywhere N = 500
 
                 #  Check that parameters do not give negative payoffs
                 warning()
@@ -89,7 +92,7 @@ for model in ["StressTest"]
                 quiver(xx, yy, quiver=(uu/scale,zz/scale),xlims=[0,1],ylims=[0,1], 
                 # xlabel="$(agentStrategyNames[1]) vs. $(agentStrategyNames[2])",
                 # ylabel="$(agentStrategyNames[3]) vs. $(agentStrategyNames[4])",
-                clip_on=true, thickness_scaling=1.5, aspect_ratio=:equal)
+                clip_on=true, thickness_scaling=1.5, aspect_ratio=:equal,titlefont=font(10))
                 annotate!(0,-0.12,text("$(agentStrategyNames[2])",:center,10))
                 annotate!(1,-0.12,text("$(agentStrategyNames[1])",:center,10))
                 annotate!(-.15,0,text("$(agentStrategyNames[4])",:right,10))

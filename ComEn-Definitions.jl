@@ -47,13 +47,13 @@ Base.@kwdef struct Strategy
 end
 
 const allStrategies = [
-    Strategy(strategyName = "cooperator", agentType = Producer, cooperate = true),
-    Strategy(strategyName = "peacekeeper", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->enf2.karmaI>0),
-    Strategy(strategyName = "defector", agentType = Producer, cooperate = false),    
-    Strategy(strategyName = "clubby", agentType = Enforcer, punishesDefectors = false, attacksif = enf2::Enforcer->enf2.karmaII>0),
-    Strategy(strategyName = "shortsighted", agentType = Enforcer, punishesDefectors = false, attacksif = enf2::Enforcer->true),
-    Strategy(strategyName = "aggressor", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->true),
-    Strategy(strategyName = "clairvoyant", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->!(enf2.strategy=="clairvoyant"||enf2.strategy=="peacekeeper")),
+    Strategy(strategyName = "CP", agentType = Producer, cooperate = true),  # Cooperative Producer
+    Strategy(strategyName = "CE", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->enf2.karmaI>0),  # Cooperation Enforcer
+    Strategy(strategyName = "DP", agentType = Producer, cooperate = false),  # Defecting Producer
+    Strategy(strategyName = "PE", agentType = Enforcer, punishesDefectors = false, attacksif = enf2::Enforcer->enf2.karmaII>0),  # Parochial Enforcer
+    Strategy(strategyName = "DE", agentType = Enforcer, punishesDefectors = false, attacksif = enf2::Enforcer->true),  # Defecting Enforcer
+    Strategy(strategyName = "AE", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->true),  # Aggressive Enforcer
+    Strategy(strategyName = "clairvoyant", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->!(enf2.strategy=="clairvoyant"||enf2.strategy=="CE")),
 ]
 const stratVector = map(x->x.strategyName,allStrategies)
 
@@ -399,8 +399,8 @@ end
 # Function that takes a population definition and gives the arrow that should be plotted at the relevant point.
 function calcArrow(pop::Vector{Vector{Any}})
     population = makePopulation(pop)  # Initialize population
-    agentStrategyNames = map(x->x[1],pop)
-    agentStrategies = map(x->stratByName(x[1],allStrategies),pop)
+    # agentStrategyNames = map(x->x[1],pop)
+    # agentStrategies = map(x->stratByName(x[1],allStrategies),pop)
 
     pr = arrowStats(population)  # Vector of individuals in each strategy
     pr = map(s-> s/sum(pr),pr)  # Vector of fractions of each strategy in the total population

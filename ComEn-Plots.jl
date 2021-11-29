@@ -11,5 +11,5 @@ areaplot(t,dataToPlot1,label=reshape(stratVector1,1,length(stratVector1)),stacke
 x1 = map(time->dataToPlot1[time,1]/(dataToPlot1[time,1]+dataToPlot1[time,2]),t)
 y1 = map(time->dataToPlot1[time,3]/(dataToPlot1[time,3]+dataToPlot1[time,4]),t)
 plot([x1],[y1],lw=2,xlims=[0,1],ylims=[0,1],legend = false)
-xlabel!("Cooperating Producers")
-ylabel!("Cooperating Enforcers")
+xlabel!("CP")
+ylabel!("CE")

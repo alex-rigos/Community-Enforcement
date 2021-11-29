@@ -10,7 +10,7 @@ end
 #  Check that parameters do not give negative taxable/contestable income
 
 params = []
-for l = 1.:1.:3.
+for l = 2.:1.:4.
     for f = .25:.25:.75
         push!(params,[l,f])
     end
@@ -23,10 +23,10 @@ end
 ]
 
 @everywhere pop=[
-    ["cooperator",5],
-    ["peacekeeper",20],
-    ["defector",5],
-    ["shortsighted",20],
+    ["CP",5],
+    ["CE",20],
+    ["DP",5],
+    ["DE",20],
     # ["clairvoyant",50],
     # ["aggressor",10],
     # ["clubby",10]

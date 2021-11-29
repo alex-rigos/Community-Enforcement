@@ -14,12 +14,12 @@ w = 2.  # baseline payoff
 τ = .25
 # Punishment
 v = 0.  # (Variable) Cost of punishment to enforcer (per producer she punishes)
-f = .75  # Fixed cost of punishment
+# f = .75  # Fixed cost of punishment
 p = 2.  # Producer's loss from being punished
 
 # Attack
 ψ = .25  # Proportion of surplus plundered
-l = 2.  # Loss for being attacked ***( l < 2(τ w -v) - f )***
+# l = 2.  # Loss for being attacked ***( l < 2(τ w -v) - f )***
 
 #--------------------MISTAKE PROBABILITIES-------------------------------------
 μ = 0.  # mistakes for action implementation
@@ -48,10 +48,10 @@ revisionVector = [  # Adjustment process: with what probability do we allow revi
 #-------------------------INITIALIZATION---------------------------------------
 # Values for population initialization (how many of each type?). Use each type only once.
 pop=[
-    ["cooperator",20],
-    ["defector",20],
-    ["peacekeeper",5],
-    ["shortsighted",5],
+    ["CP",20],
+    ["DP",20],
+    ["CE",5],
+    ["DE",5],
     # ["clairvoyant",50],
     # ["aggressor",10],
     # ["clubby",10]

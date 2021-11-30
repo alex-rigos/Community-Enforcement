@@ -460,11 +460,12 @@ function ourPlot(parameters::Vector{Any})
     par = parameters[3]
     
     if !isempty(par)
+        old_value = eval(Symbol(par[1]))
         string_as_varname(par[1],par[2])
-        # println("$(par[1])=$(eval(Symbol(par[1])))")
-        addedString=" $(par[1])=$(par[2])"
         if par[1] == "revisionVector"
             addedString=" revVec=$(getindex.(par[2],2))"
+        else
+            addedString=" $(par[1])=$(par[2])"
         end
     end
 
@@ -485,13 +486,17 @@ function ourPlot(parameters::Vector{Any})
     barplot = bar(reshape(stratVector1,1,length(stratVector1)),reshape(avg/length(population),1,length(stratVector1)),title=titleString, labels = stratVector1,bar_width = 1,legend = false,ylims=[0,1])
     areap = areaplot((gensToIgnore+1:generations-gensToIgnore)/1000,data1,label=titleString, stacked=true,normalized=false,legend=false)
 
-    dir = "./Figs/$(model)-model/time-averages/"
-    if model == "StressTest"
-        dir = "./Figs/$(model)-model/$(par[1])/time-averages/"
+    subdir = "time-averages-new/"
+    dir = "./Figs/$(model)-model/$(subdir)"
+    if !isempty(par[1])
+        dir = "./Figs/$(model)-model/$(par[1])/$(subdir)"
     end
     plot(areap,barplot,layout = (2,1))
     mkpath(dir)
     savefig("$(dir)/$(paramString).pdf")
+    if !isempty(par)  # Return value to its previous state
+        string_as_varname(par[1],old_value)
+    end
 end
 
 function string_as_varname(s::AbstractString,v::Any)

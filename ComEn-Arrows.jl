@@ -52,7 +52,7 @@ for model in ["StressTest"]
                 @everywhere global l = $(l)
 
                 # How many times to sample for each point?
-                @everywhere N = 500
+                @everywhere N = 500  # 500
 
                 #  Check that parameters do not give negative payoffs
                 warning()
@@ -66,13 +66,13 @@ for model in ["StressTest"]
                 for CP = prodstep:prodstep:np-prodstep
                     for CE = enfstep:enfstep:ne-enfstep
                 # ATTENTION: Order matters here for where they are being plotted. Use exactly 4 srategies.
-                        pop=[
+                        popu=[
                             ["CP", CP],  # x-axis x=1
                             ["DP", np - CP],  # x-axis x=0
                             ["CE", CE],  # y-axis y=1
                             ["DE", ne - CE],  # y-axis y=0
                             ]
-                            push!(pops,pop)
+                            push!(pops,popu)
                     end
                 end
                 @everywhere agentStrategyNames = map(x->x[1],$pops[1])
@@ -102,8 +102,8 @@ for model in ["StressTest"]
                 dir = "./Figs/$(model)-model/arrow-plots/"
                 if model == "StressTest"
                     dir = "./Figs/$(model)-model/$(par[1])/arrow-plots/"
-                    mkpath(dir)
                 end
+                mkpath(dir)
                 savefig("$(dir)/$(paramString).pdf")
             end
         end

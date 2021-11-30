@@ -451,11 +451,23 @@ end
 
 # For time averages
 
-function ourPlot(parameters::Vector{<:Real})
+function ourPlot(parameters::Vector{Any})
     warning()
+    addedString=""
     gen=0  # Start counting generations
     data = zeros(generations,length(stratVector))  # This is where the data is stored
-    global l,f = parameters
+    global l,f = parameters[1:2]
+    par = parameters[3]
+    
+    if !isempty(par)
+        string_as_varname(par[1],par[2])
+        # println("$(par[1])=$(eval(Symbol(par[1])))")
+        addedString=" $(par[1])=$(par[2])"
+        if par[1] == "revisionVector"
+            addedString=" revVec=$(getindex.(par[2],2))"
+        end
+    end
+
     while gen<generations
         gen += 1
         simulate!(population)
@@ -466,12 +478,20 @@ function ourPlot(parameters::Vector{<:Real})
     data1 = data[gensToIgnore+1:end, setdiff(1:end,notIncluded)]
     stratVector1 = stratVector[setdiff(1:end,notIncluded)]
     avg = mean(eachrow(data1))
+    
     paramString = "l=$(l) f=$(f)"
-    titleString = string(model,": ",paramString)
+    titleString = string(model,": ",paramString,addedString)
+    # println(titleString)
     barplot = bar(reshape(stratVector1,1,length(stratVector1)),reshape(avg/length(population),1,length(stratVector1)),title=titleString, labels = stratVector1,bar_width = 1,legend = false,ylims=[0,1])
-    areap = areaplot((gensToIgnore+1:generations-gensToIgnore)/1000,data1,label="l = $(l), f = $(f)", stacked=true,normalized=false,legend=false)
+    areap = areaplot((gensToIgnore+1:generations-gensToIgnore)/1000,data1,label=titleString, stacked=true,normalized=false,legend=false)
+
+    dir = "./Figs/$(model)-model/time-averages/"
+    if model == "StressTest"
+        dir = "./Figs/$(model)-model/$(par[1])/time-averages/"
+    end
     plot(areap,barplot,layout = (2,1))
-    savefig("./Figs/$(model)-model/time-averages/$(paramString).pdf")
+    mkpath(dir)
+    savefig("$(dir)/$(paramString).pdf")
 end
 
 function string_as_varname(s::AbstractString,v::Any)

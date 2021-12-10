@@ -451,23 +451,49 @@ end
 
 # For time averages
 
-function ourPlot(parameters::Vector{Any})
+function ourPlot(parameters::Vector{Vector{Any}})
     warning()
+    mainString=""
     addedString=""
+    toAdd=""
     gen=0  # Start counting generations
     data = zeros(generations,length(stratVector))  # This is where the data is stored
-    global l,f = parameters[1:2]
-    par = parameters[3]
+    par1 = parameters[1:end-1]
+
+    if !isempty(par1)
+        for dpar in par1
+            old_value = eval(Symbol(dpar[1]))
+            string_as_varname(dpar[1],dpar[2])
+            if par1[1] == "revisionVector"
+                toAdd=" revVec=$(getindex.(dpar[2],2))"
+            else
+                toAdd=" $(dpar[1])=$(dpar[2])"
+            end
+            mainString = mainString * toAdd
+        end
+    end
+
+    par = parameters[end]
     
     if !isempty(par)
         old_value = eval(Symbol(par[1]))
         string_as_varname(par[1],par[2])
         if par[1] == "revisionVector"
-            addedString=" revVec=$(getindex.(par[2],2))"
+            addedString="revVec=$(getindex.(par[2],2))"
         else
-            addedString=" $(par[1])=$(par[2])"
+            addedString="$(par[1])=$(par[2])"
         end
     end
+
+    # println(par)
+    # paramString = "l=$(l) f=$(f)"
+    titleString = string(model,": ",mainString," ",addedString)
+    subdir = "time-averages-new/"
+    dir = "./Figs/$(model)-model/$(subdir)"
+    if !isempty(par)
+        dir = "./Figs/$(model)-model/$(par[1])/$(subdir)"
+    end
+    # println(titleString)
 
     while gen<generations
         gen += 1
@@ -480,20 +506,14 @@ function ourPlot(parameters::Vector{Any})
     stratVector1 = stratVector[setdiff(1:end,notIncluded)]
     avg = mean(eachrow(data1))
     
-    paramString = "l=$(l) f=$(f)"
-    titleString = string(model,": ",paramString,addedString)
-    # println(titleString)
+   
     barplot = bar(reshape(stratVector1,1,length(stratVector1)),reshape(avg/length(population),1,length(stratVector1)),title=titleString, labels = stratVector1,bar_width = 1,legend = false,ylims=[0,1])
     areap = areaplot((gensToIgnore+1:generations-gensToIgnore)/1000,data1,label=titleString, stacked=true,normalized=false,legend=false)
 
-    subdir = "time-averages-new/"
-    dir = "./Figs/$(model)-model/$(subdir)"
-    if !isempty(par[1])
-        dir = "./Figs/$(model)-model/$(par[1])/$(subdir)"
-    end
+  
     plot(areap,barplot,layout = (2,1))
     mkpath(dir)
-    savefig("$(dir)/$(paramString).pdf")
+    savefig("$(dir)/$(mainString).pdf")
     if !isempty(par)  # Return value to its previous state
         string_as_varname(par[1],old_value)
     end

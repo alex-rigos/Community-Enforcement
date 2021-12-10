@@ -14,12 +14,12 @@ w = 2.  # baseline payoff
 τ = .25
 # Punishment
 v = 0.  # (Variable) Cost of punishment to enforcer (per producer she punishes)
-# f = .75  # Fixed cost of punishment
+f = .75  # Fixed cost of punishment
 p = 2.  # Producer's loss from being punished
 
 # Attack
 ψ = .25  # Proportion of surplus plundered
-# l = 2.  # Loss for being attacked ***( l < 2(τ w -v) - f )***
+l = 2.  # Loss for being attacked ***( l < 2(τ w -v) - f )***
 
 #--------------------MISTAKE PROBABILITIES-------------------------------------
 μ = 0.  # mistakes for action implementation

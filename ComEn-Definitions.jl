@@ -46,7 +46,7 @@ Base.@kwdef struct Strategy
     cooperate::Any = "Enforcer"  # The default is of a type that gives an error if assigned to the wrong type
 end
 
-const allStrategies = [
+allStrategies = [
     Strategy(strategyName = "CP", agentType = Producer, cooperate = true),  # Cooperative Producer
     Strategy(strategyName = "CE", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->enf2.karmaI>0),  # Cooperation Enforcer
     Strategy(strategyName = "DP", agentType = Producer, cooperate = false),  # Defecting Producer
@@ -55,7 +55,7 @@ const allStrategies = [
     Strategy(strategyName = "AE", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->true),  # Aggressive Enforcer
     Strategy(strategyName = "clairvoyant", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->!(enf2.strategy=="clairvoyant"||enf2.strategy=="CE")),
 ]
-const stratVector = map(x->x.strategyName,allStrategies)
+stratVector = map(x->x.strategyName,allStrategies)
 
 function agent(strat::Strategy)
     if strat.agentType == Enforcer
@@ -77,7 +77,9 @@ end
 function simulate!(population::Vector{<:Agent})
     cleanSlate!(population)  # Set fitness to zero
     #=============SUPERGAME=====================#
+    rounds = 0
     oneMoreRound = true
+    rounds += 1
     while oneMoreRound
         awardBackgroundFitness!(population)
         matchStep12!(population)
@@ -87,8 +89,16 @@ function simulate!(population::Vector{<:Agent})
         fitnessConsolidation!(population)
         oneMoreRound = mistake(δ)
     end
+    fitnessNormalization!(population)
     #===========================================#
 end
+
+fitnessNormalization!(population::Vector{<:Agent},rounds::Int)
+    for agent in 1:length(list)
+        list[agent].fitness += list[agent].fitness/rounds
+    end
+end
+
 
 #===========GAME STUFF===========================#
 # Give producers background fitness
@@ -140,19 +150,19 @@ function production!(prod1::Int,prod2::Int,list::Vector{<:Agent})
         list[prod].cooperated = list[prod].cooperate == !mistake(probProduceMistake)
     end
 
-    if list[prod1].cooperated
-        if list[prod2].cooperated
+    if list[prod1].cooperated  # prod1 cooperates
+        if list[prod2].cooperated  # prod2 cooperates
             list[prod1].payoff += b - c 
             list[prod2].payoff += b - c
-        else
+        else  # prod2 defects
             list[prod1].payoff += - c
             list[prod2].payoff += b
         end
-    else
-        if list[prod2].cooperated
-            list[prod1].payoff += 0 + b
-            list[prod2].payoff += 0 - c
-        else
+    else  # prod1 defects
+        if list[prod2].cooperated  # prod2 cooperates
+            list[prod1].payoff +=  b
+            list[prod2].payoff += - c
+        else  # prod2 defects
             list[prod1].payoff += 0
             list[prod2].payoff += 0
         end
@@ -178,7 +188,7 @@ function punishment!(prodList::Vector{Int},enf::Int,list::Vector{<:Agent})
     checkType.(prodList,Ref(Producer),Ref(list))
     checkType(enf,Enforcer,list)
     for prod in prodList
-        producerPerceivedToDefect = list[prod].cooperated == mistake(probDetectionMistake)
+        producerPerceivedToDefect = list[prod].cooperated == mistake(ρ)
         enforcerWillingToPunish = list[enf].punishesDefectors == !mistake(probPunishMistake)
         enforcerPunishesThisProducer = producerPerceivedToDefect && enforcerWillingToPunish
         if enforcerPunishesThisProducer
@@ -273,6 +283,9 @@ function monitoringCosts!(list::Vector{<:Agent})
     for agent in 1:length(list)
         if typeof(list[agent])==Enforcer && list[agent].punishesDefectors
             list[agent].payoff -= f
+        end
+        if typeof(list[agent])==Enforcer && list[agent].strategy == "PE"
+            list[agent].payoff -= f2
         end
     end
 end
@@ -451,49 +464,38 @@ end
 
 # For time averages
 
-function ourPlot(parameters::Vector{Vector{Any}})
+function ourPlot(pars::Vector{Vector{Any}},subdir::String)
+    include("$(string("ComEn-Parameters",model,".jl"))") # Parameters for the simulation
     warning()
     mainString=""
-    addedString=""
     toAdd=""
     gen=0  # Start counting generations
     data = zeros(generations,length(stratVector))  # This is where the data is stored
-    par1 = parameters[1:end-1]
 
-    if !isempty(par1)
-        for dpar in par1
-            old_value = eval(Symbol(dpar[1]))
-            string_as_varname(dpar[1],dpar[2])
-            if par1[1] == "revisionVector"
-                toAdd=" revVec=$(getindex.(dpar[2],2))"
+    if isempty(pars)
+        mainString = "$(model)"
+    else
+        for dpar in pars
+            if !isempty(dpar)
+                string_as_varname(dpar[1],dpar[2])
+                if dpar[1] == "μ"
+                    globalMistakeProbability(dpar[2])
+                end
+                if pars[1] == "revisionVector"
+                    toAdd=" revVec=$(getindex.(dpar[2],2))"
+                else
+                    toAdd=" $(dpar[1])=$(dpar[2])"
+                end
             else
-                toAdd=" $(dpar[1])=$(dpar[2])"
+                toAdd=" "
             end
             mainString = mainString * toAdd
         end
     end
+    changef2(f)  #  Change the cost of Parochial Enforcers with the current value of f
 
-    par = parameters[end]
-    
-    if !isempty(par)
-        old_value = eval(Symbol(par[1]))
-        string_as_varname(par[1],par[2])
-        if par[1] == "revisionVector"
-            addedString="revVec=$(getindex.(par[2],2))"
-        else
-            addedString="$(par[1])=$(par[2])"
-        end
-    end
-
-    # println(par)
-    # paramString = "l=$(l) f=$(f)"
-    titleString = string(model,": ",mainString," ",addedString)
-    subdir = "time-averages-new/"
+    titleString = string(model," ",mainString)
     dir = "./Figs/$(model)-model/$(subdir)"
-    if !isempty(par)
-        dir = "./Figs/$(model)-model/$(par[1])/$(subdir)"
-    end
-    # println(titleString)
 
     while gen<generations
         gen += 1
@@ -505,21 +507,27 @@ function ourPlot(parameters::Vector{Vector{Any}})
     data1 = data[gensToIgnore+1:end, setdiff(1:end,notIncluded)]
     stratVector1 = stratVector[setdiff(1:end,notIncluded)]
     avg = mean(eachrow(data1))
-    
+    # println("ψ=$(ψ), κ=$(κ)\n$(stratVector1)\n$(avg)")
    
     barplot = bar(reshape(stratVector1,1,length(stratVector1)),reshape(avg/length(population),1,length(stratVector1)),title=titleString, labels = stratVector1,bar_width = 1,legend = false,ylims=[0,1])
     areap = areaplot((gensToIgnore+1:generations-gensToIgnore)/1000,data1,label=titleString, stacked=true,normalized=false,legend=false)
 
-  
     plot(areap,barplot,layout = (2,1))
     mkpath(dir)
     savefig("$(dir)/$(mainString).pdf")
-    if !isempty(par)  # Return value to its previous state
-        string_as_varname(par[1],old_value)
-    end
 end
 
 function string_as_varname(s::AbstractString,v::Any)
     s = Symbol(s)
     @eval (global ($s)=($v))
+end
+
+function globalMistakeProbability(μ::Real)
+    global probProduceMistake = μ
+    global probPunishMistake = μ
+    global probAttackMistake = μ
+end
+
+function changef2(f::Real)
+    global f2 = f * ϕ
 end

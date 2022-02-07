@@ -3,3 +3,9 @@ testing.jl
 .DS_Store
 /Figs
 TODO.md
+*.pdf
+*.csv
+*.log
+*.aux
+*.gz
+/paper

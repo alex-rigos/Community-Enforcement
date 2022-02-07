@@ -50,8 +50,8 @@ allStrategies = [
     Strategy(strategyName = "CP", agentType = Producer, cooperate = true),  # Cooperative Producer
     Strategy(strategyName = "CE", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->enf2.karmaI>0),  # Cooperation Enforcer
     Strategy(strategyName = "DP", agentType = Producer, cooperate = false),  # Defecting Producer
-    Strategy(strategyName = "PE", agentType = Enforcer, punishesDefectors = false, attacksif = enf2::Enforcer->enf2.karmaII>0),  # Parochial Enforcer
     Strategy(strategyName = "DE", agentType = Enforcer, punishesDefectors = false, attacksif = enf2::Enforcer->true),  # Defecting Enforcer
+    Strategy(strategyName = "PE", agentType = Enforcer, punishesDefectors = false, attacksif = enf2::Enforcer->enf2.karmaII>0),  # Parochial Enforcer
     Strategy(strategyName = "AE", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->true),  # Aggressive Enforcer
     Strategy(strategyName = "clairvoyant", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->!(enf2.strategy=="clairvoyant"||enf2.strategy=="CE")),
 ]
@@ -79,8 +79,8 @@ function simulate!(population::Vector{<:Agent})
     #=============SUPERGAME=====================#
     rounds = 0
     oneMoreRound = true
-    rounds += 1
     while oneMoreRound
+        rounds += 1
         awardBackgroundFitness!(population)
         matchStep12!(population)
         matchStep3!(population)
@@ -89,13 +89,13 @@ function simulate!(population::Vector{<:Agent})
         fitnessConsolidation!(population)
         oneMoreRound = mistake(δ)
     end
-    fitnessNormalization!(population)
+    fitnessNormalization!(population,rounds)
     #===========================================#
 end
 
-fitnessNormalization!(population::Vector{<:Agent},rounds::Int)
+function fitnessNormalization!(list::Vector{<:Agent},rounds::Int)
     for agent in 1:length(list)
-        list[agent].fitness += list[agent].fitness/rounds
+        list[agent].fitness = list[agent].fitness/rounds
     end
 end
 
@@ -462,7 +462,48 @@ function arrowStats(list::Vector{<:Agent})
     map(strat-> count(y ->  y.strategy == strat,list),agentStrategyNames)
 end
 
+function setParameters(parameter::String,value::Any)
+    include("$(string("ComEn-Parameters",model,".jl"))") # Parameters for the simulation
+    string_as_varname(parameter,value)
+        if parameter == "μ"
+            globalMistakeProbability(μ)
+        end
+        changef2(f)
+        warning()
+end
+
+function setParameters(params::Vector{Vector{Any}})
+    include("$(string("ComEn-Parameters",model,".jl"))") # Parameters for the simulation
+    for parPair in params
+        parameter = parPair[1]
+        value = parPair[2]
+        string_as_varname(parameter,value)
+        if parameter == "μ"
+            globalMistakeProbability(μ)
+        end
+    end
+    changef2(f)
+    warning()
+end
+
+function setParameters(params::Vector{Any})
+    setParameters([params])
+end
 # For time averages
+
+# Give an initial population and a number of generations. Get the time average of each strategy across generations
+function timeAverage(pop::Vector{Vector{Any}},generations::Int)        
+    gen=0  # Start counting generations
+    data = zeros(generations,length(stratVector))  # This is where the data is stored
+    population = makePopulation(pop)
+    while gen<generations
+        gen += 1
+        simulate!(population)
+        selection!(population,agentsToRevise,revisionVector)
+        data[gen,:]=stats(population)
+    end
+    return mean(eachrow(data))
+end
 
 function ourPlot(pars::Vector{Vector{Any}},subdir::String)
     include("$(string("ComEn-Parameters",model,".jl"))") # Parameters for the simulation
@@ -530,4 +571,37 @@ end
 
 function changef2(f::Real)
     global f2 = f * ϕ
+end
+
+function theFile(parameters::Vector{Vector{Any}},separator::String)
+    toAdd = ""
+    fString = ""
+    for i in 1:length(parameters)
+        par = parameters[i]
+        toAdd="$(par[1])=$(par[2])"
+        if i > 1
+            fString = fString * separator
+        end
+        fString = fString * toAdd
+    end
+    return fString
+end
+
+function arrow0!(x, y, u, v; as=0.07, lc=:black, la=1, lw=1,rounding=.02)
+    nuv = sqrt(u^2 + v^2)
+    v1, v2 = [u;v] / nuv,  [-v;u] / nuv
+    v4 = (3*v1 + v2)/3.1623  # sqrt(10) to get unit vector
+    v5 = v4 - 2*(v4'*v2)*v2
+    # v4, v5 = as*nuv*v4, as*nuv*v5
+    v4, v5 = as*v4, as*v5
+    plot!(circleShape(x+u,y+v,rounding),seriestype = [:shape],lw=0,c=arrowcol,legend=false,fillalpha=1,aspect_ratio=1)
+    plot!([x,x+u], [y,y+v], lc=lc,la=la,lw=lw)
+    plot!([x+u,x+u-v5[1]], [y+v,y+v-v5[2]], lc=lc, la=la,lw=lw)
+    plot!([x+u,x+u-v4[1]], [y+v,y+v-v4[2]], lc=lc, la=la,lw=lw)
+    
+end
+
+function circleShape(h,k,r)
+    θ = LinRange(0,2*π,100)
+    h .+ r*sin.(θ), k .+ r*cos.(θ)
 end

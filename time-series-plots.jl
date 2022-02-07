@@ -32,7 +32,7 @@ for num_strat in [4,5]
         seriescolor=mycolors,clip_on=true,thickness_scaling=1.7,
         tickfontfamily="Computer Modern",guidefontsize=6)
         # plot!(ylabel=L"{\textrm{\sffamily \LARGE population}}",fontfamily = "Helvetica",font=10)
-        theheight = -14
+        theheight = -10
         hshift=5
         annotate!(-15,40,text("population",:right,11,"Helvetica",rotation=90))
         annotate!(49+hshift,theheight,text("period",:right,11,"Helvetica"))
@@ -41,8 +41,8 @@ for num_strat in [4,5]
         annotate!(51+hshift,theheight,text(L"\left(\right.",:left,13))
         annotate!(58+hshift,theheight,text(L"\left.\right)",:left,13))
         thescale=1.5
-        plot!(size=(440*thescale,220*thescale))
-        # plot!(size=(440*thescale,330*thescale))
+        # plot!(size=(440*thescale,220*thescale))
+        plot!(size=(440*thescale,330*thescale))
         plot!(title=subfig_label,titlelocation=:left,titlefont=font("Computer Modern",11))
         plot!(guidefontsize=6,tickfontsize=10,bottom_margin=3mm)
         mkpath(subdirwrite)

@@ -4,7 +4,6 @@ testing.jl
 /Figs
 TODO.md
 *.pdf
-*.csv
 *.log
 *.aux
 *.gz

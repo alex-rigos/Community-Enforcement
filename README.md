@@ -1,7 +1,7 @@
-# Community Enforcement
+# Code for ``Emergence of Specialised Third-Party Enforcement''
 
 ## System Requirements
-1. [Julia v1.6](https://julialang.org/) with the following pacakges 
+1. [Julia v1.5](https://julialang.org/) with the following pacakges 
   * `Random` (??), 
   * `StatsBase v0.33.10` 
   * `Plots v1.22.5` 
@@ -20,10 +20,9 @@
 3. At the prompt `julia>` type `]` to enter the package manager
 4. At the prompt (e.g. `(@v1.6) pkg>`) run the following command 
 ```
-    add Random StatsBase Plots CSV Tables ColorSchemes Measures Vega ColorBrewer LaTeXStrings Distributed
+add Random StatsBase Plots CSV Tables ColorSchemes Measures Vega ColorBrewer LaTeXStrings Distributed
 ```
-5. Type `[backspace]` to exit the package manager environment
-6. 
+5. Type `[backspace]` to exit the package manager REPL
 
 ## Usage
 ### Simulation

@@ -43,7 +43,7 @@ $ julia
 
 ## Demo
 ### 1. Set model and simulation parameters
-Select the parameters to be used in the simulation by editing the file `demo-params.jl` (and saving the file). A short description of each parameter is included in this file. For more details, please see the paper. The version of the file provided includes the parameter values for the baseline model and for a population of 50 agents with initial state $(n_{CP},n_{CE},n_{DP},n_{DE})=(20,20,5,5)$.
+Select the parameters to be used in the simulation by editing the file `demo-params.jl` (and saving the file). A short description of each parameter is included in this file. For more details, please see the paper. The version of the file provided includes the parameter values for the baseline model and for a population of 50 agents with initial state $`(n_{CP},n_{CE},n_{DP},n_{DE})=(20,20,5,5)`$.
 
 ### 2. Data generation (simulations)
 Run the simulation (default is 1,000 generations, this can be changed in the `demo-params.jl` file). This can be done in two ways:

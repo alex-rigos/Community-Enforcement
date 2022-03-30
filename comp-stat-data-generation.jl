@@ -1,6 +1,6 @@
 using Distributed
 using Plots, Statistics
-using CSV, Tables, Latexify,LaTeXStrings
+using CSV, Tables, Latexify, LaTeXStrings
 
 num_procs = 8
 if nworkers() < min(length(Sys.cpu_info()),num_procs)
@@ -32,13 +32,12 @@ ranges = [
 
 data = []
 
-for ran in ranges
+for ran in ranges  # Loop for the different parameters
     
     parameter = ran[1]
     values = ran[2]
-    # values = [.2]
 
-    pops = [  # Vector of initial conditions
+    pops = [       # Vector of initial conditions
         [["CP",10],
         ["CE",2],
         ["DP",30],
@@ -61,7 +60,7 @@ for ran in ranges
     ]
     @everywhere agentStrategies = map(x->stratByName(x[1],allStrategies),$pops[1])
 
-    pops = append!(pops,pops)
+    pops = append!(pops,pops) # Simulate 2 times for each initial condition
 
     for val in values
         @everywhere setParameters($(parameter),$(val))

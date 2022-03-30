@@ -403,27 +403,25 @@ end
 function calcArrow(pop::Vector{Vector{Any}})
     population = makePopulation(pop)  # Initialize population
 
-    pr = arrowStats(population)  # Vector of individuals in each strategy
+    pr = map(strat-> count(y ->  y.strategy == strat,population),agentStrategyNames)  # Vector of individuals in each strategy
     pr = map(s-> s/sum(pr),pr)  # Vector of fractions of each strategy in the total population
     q = probVec(population,N)  # Vector of choice probabilities for each strategy
     
     x = pr[1]/(pr[1]+pr[2])  # x position
     y = pr[3]/(pr[3]+pr[4])  # y position
-    u = (pr[2]*q[1]-pr[1]*q[2])/(pr[1]+pr[2]) # x arrow direction
-    z = (pr[4]*q[3]-pr[3]*q[4])/(pr[3]+pr[4]) # y arrow direction
+    u = (pr[2]*q[1]-pr[1]*q[2])/(pr[1]+pr[2])  # x direction
+    z = (pr[4]*q[3]-pr[3]*q[4])/(pr[3]+pr[4])  # y direction
     return [x,y,u,z]
 end
 
-# Simulate populations N times and get average choice probabilities for each agent type
+# Simulate populations N times and get average choice probabilities for each profession
 function probVec(list::Vector{<:Agent}, N::Int)
     fitvec = zeros(4)
     i = 0
     while i < N
         i += 1
-        dummypop = deepcopy(list) # create a copy of the population so that the original population does not change
-        simulate!(dummypop)
+        simulate!(list)
         fitvec += getindex.(fitnessVector(list,agentStrategies),2)/N  # Vector fitnesses for all strategies
-        # vec += choiceProb(dummypop)/N  # Take averages
     end
     vec = choiceProb(fitvec)
     return vec
@@ -444,10 +442,7 @@ function choiceProb(fitvec::Vector{<:Real})
     return pvec
 end
 
-function arrowStats(list::Vector{<:Agent})
-    map(strat-> count(y ->  y.strategy == strat,list),agentStrategyNames)
-end
-
+# Function to change the values of parameters
 function setParameters(parameter::String,value::Any)
     include("$(string("ComEn-Parameters",model,".jl"))") # Parameters for the simulation
     string_as_varname(parameter,value)
@@ -491,74 +486,25 @@ function timeAverage(pop::Vector{Vector{Any}},generations::Int)
     return mean(eachrow(data))
 end
 
-function ourPlot(pars::Vector{Vector{Any}},subdir::String)
-    include("$(string("ComEn-Parameters",model,".jl"))") # Parameters for the simulation
-    warning()
-    mainString=""
-    toAdd=""
-    gen=0  # Start counting generations
-    data = zeros(generations,length(stratVector))  # This is where the data is stored
-
-    if isempty(pars)
-        mainString = "$(model)"
-    else
-        for dpar in pars
-            if !isempty(dpar)
-                string_as_varname(dpar[1],dpar[2])
-                if dpar[1] == "μ"
-                    globalMistakeProbability(dpar[2])
-                end
-                if pars[1] == "revisionVector"
-                    toAdd=" revVec=$(getindex.(dpar[2],2))"
-                else
-                    toAdd=" $(dpar[1])=$(dpar[2])"
-                end
-            else
-                toAdd=" "
-            end
-            mainString = mainString * toAdd
-        end
-    end
-    changef2(f)  #  Change the cost of Parochial Enforcers with the current value of f
-
-    titleString = string(model," ",mainString)
-    dir = "./Figs/$(model)-model/$(subdir)"
-
-    while gen<generations
-        gen += 1
-        simulate!(population)
-        selection!(population,agentsToRevise,revisionVector)
-        data[gen,:]=stats(population)
-    end
-
-    data1 = data[gensToIgnore+1:end, setdiff(1:end,notIncluded)]
-    stratVector1 = stratVector[setdiff(1:end,notIncluded)]
-    avg = mean(eachrow(data1))
-    # println("ψ=$(ψ), κ=$(κ)\n$(stratVector1)\n$(avg)")
-   
-    barplot = bar(reshape(stratVector1,1,length(stratVector1)),reshape(avg/length(population),1,length(stratVector1)),title=titleString, labels = stratVector1,bar_width = 1,legend = false,ylims=[0,1])
-    areap = areaplot((gensToIgnore+1:generations-gensToIgnore)/1000,data1,label=titleString, stacked=true,normalized=false,legend=false)
-
-    plot(areap,barplot,layout = (2,1))
-    mkpath(dir)
-    savefig("$(dir)/$(mainString).pdf")
-end
-
+# Set a global variable equal to a value
 function string_as_varname(s::AbstractString,v::Any)
     s = Symbol(s)
     @eval (global ($s)=($v))
 end
 
+# Set all mistake probabilities equal to the same number
 function globalMistakeProbability(μ::Real)
     global probProduceMistake = μ
     global probPunishMistake = μ
     global probAttackMistake = μ
 end
 
+# Set the fixed cost for Parochial Enforcers to f * ϕ
 function changef2(f::Real)
     global f2 = f * ϕ
 end
 
+# Function to create filenames
 function theFile(parameters::Vector{Vector{Any}},separator::String)
     toAdd = ""
     fString = ""
@@ -573,12 +519,12 @@ function theFile(parameters::Vector{Vector{Any}},separator::String)
     return fString
 end
 
+# Create arrow plots from vectors x, y, u, v
 function arrow0!(x, y, u, v; as=0.07, lc=:black, la=1, lw=1,rounding=.02)
     nuv = sqrt(u^2 + v^2)
     v1, v2 = [u;v] / nuv,  [-v;u] / nuv
     v4 = (3*v1 + v2)/3.1623  # sqrt(10) to get unit vector
     v5 = v4 - 2*(v4'*v2)*v2
-    # v4, v5 = as*nuv*v4, as*nuv*v5
     v4, v5 = as*v4, as*v5
     plot!(circleShape(x+u,y+v,rounding),seriestype = [:shape],lw=0,c=arrowcol,legend=false,fillalpha=1,aspect_ratio=1)
     plot!([x,x+u], [y,y+v], lc=lc,la=la,lw=lw)
@@ -587,6 +533,7 @@ function arrow0!(x, y, u, v; as=0.07, lc=:black, la=1, lw=1,rounding=.02)
     
 end
 
+# Draw a circle for arrow tips
 function circleShape(h,k,r)
     θ = LinRange(0,2*π,100)
     h .+ r*sin.(θ), k .+ r*cos.(θ)

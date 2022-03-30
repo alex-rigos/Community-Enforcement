@@ -234,7 +234,7 @@ function interactEnf!(enf1::Int, enf2::Int,list::Vector{<:Agent})
     
 end
 
-#Check for transgressions of enf1 who meets enf2 and takes action attacks1.
+# Check for transgressions of enf1 who meets enf2 and takes action attacks1.
 function checkRulesStep3!(enf1::Int,attacks1::Bool,enf2::Int,list::Vector{<:Agent})
     if !(attacks1 && list[enf2].karmaI>0 || !attacks1 && list[enf2].karmaI==0)
         list[enf1].okWithRuleI = false
@@ -244,14 +244,12 @@ function checkRulesStep3!(enf1::Int,attacks1::Bool,enf2::Int,list::Vector{<:Agen
     end
 end
 
+# Enforcers who do not comply with standards get bad reputation (karma)
 function updateKarma!(enfList::Vector{Int},list::Vector{<:Agent})
     checkType.(enfList,Ref(Enforcer),Ref(list))
     for enf in enfList
         if !list[enf].okWithRuleI
             list[enf].karmaI = κ
-            # if list[enf].strategy == "peacekeeper"
-            #     println("Why am I being punished?!")
-            # end
         end
         if !list[enf].okWithRuleII
             list[enf].karmaII = κ2
@@ -259,6 +257,7 @@ function updateKarma!(enfList::Vector{Int},list::Vector{<:Agent})
     end
 end
 
+# Enforcers who comply with standards get better reputation (less bad karma)
 function redemption!(list::Vector{<:Agent})
     enfInd = getAgentIndices(list,Enforcer)
     if !isempty(enfInd)
@@ -278,7 +277,7 @@ function redemption!(enf::Int, list::Vector{<:Agent})
     redemption!([enf],list)
 end
 
-# Enforcer costs for using a punishing strategy (which requires monitoring)
+# Apply monitoring costs to enforcers who use punishing strategies
 function monitoringCosts!(list::Vector{<:Agent})
     for agent in 1:length(list)
         if typeof(list[agent])==Enforcer && list[agent].punishesDefectors
@@ -290,6 +289,7 @@ function monitoringCosts!(list::Vector{<:Agent})
     end
 end
 
+# Payoff acquired in this period is added to each agent's fitness
 function fitnessConsolidation!(list::Vector{<:Agent})
     for agent in 1:length(list)
         list[agent].fitness += list[agent].payoff
@@ -316,6 +316,7 @@ function strategyFitness(list::Vector{<:Agent},strat::Strategy)
     return fit
 end
 
+# Return fitnesses for a list of strategies
 function fitnessVector(list::Vector{<:Agent},strat::Vector{Strategy})
     fitVector=[]
     for s in strat
@@ -323,14 +324,6 @@ function fitnessVector(list::Vector{<:Agent},strat::Vector{Strategy})
     end
     return fitVector
 end
-
-# function fitnessVector(list::Vector{<:Agent})
-#     fitVector=[]
-#     for s in allStrategies
-#         push!(fitVector,[s.strategyName,strategyFitness(list,s)])
-#     end
-#     return fitVector
-# end
 
 #  The natural selection process. The number of agents that consider changing is k. revVec is the revision Vector
 function selection!(list::Vector{<:Agent},k::Int,revVec::Vector{Vector{Any}})
@@ -361,80 +354,73 @@ function selection!(list::Vector{<:Agent},k::Int,revVec::Vector{Vector{Any}})
     end
 end
 
+# Reset fitness and reputation
 function cleanSlate!(list::Vector{<:Agent})
     for agent in 1:length(list)
         list[agent].fitness = 0
         if typeof(list[agent]) == Enforcer
             list[agent].karmaI = 0
             list[agent].karmaII = 0
-            # if agent.strategy == "peacekeeper"
-                # println("cleaned me!")
-            # end
         end
     end
 end
 
+# Return number of agents in each strategy
 function stats(list::Vector{<:Agent})
     map(strat-> count(y ->  y.strategy == strat,list),stratVector)
-    # count( x->x.cooperate==true&&typeof(x) ,list)
 end
 
-
-
 #===========UTILITIES===============#
+# Returns the indices of all agents of the given type
 function getAgentIndices(list::Vector{<:Agent},t::Type)
     return findall(x -> typeof(x)<:t,list)
 end
-# function getAgents(list::Vector{<:Agent},t::Type)
-#     list[getAgentIndices(list,t)]
-# end
 
+#-ERROR STUFF-#
+
+# Throw an error if enforcers can obtain negative surpluses
 function warning()
     if  v > τ*w
         error("*******  NEGATIVE PAYOFFS ARE POSSIBLE *******")
     end
 end
 
-# ERROR STUFF
-
+# Throw an error if the wrong type of agent is supplied to a function
 function checkType(agent::Int,t::Type,list::Vector{<:Agent})
     if !(typeof(list[agent]) == t)
         error("Wrong agent type!!")
     end
 end
 
+# Additional method for vectors of agents
 function checkType(agents::Vector{Int},t::Vector{<:Type},list::Vector{<:Agent})
     checkType.(agents,t,Ref(list))
 end
 
-# STUFF FOR ARROW DIAGRAMS
+#-STUFF FOR ARROW DIAGRAMS-#
 
 # Function that takes a population definition and gives the arrow that should be plotted at the relevant point.
 function calcArrow(pop::Vector{Vector{Any}})
     population = makePopulation(pop)  # Initialize population
-    # agentStrategyNames = map(x->x[1],pop)
-    # agentStrategies = map(x->stratByName(x[1],allStrategies),pop)
 
     pr = arrowStats(population)  # Vector of individuals in each strategy
     pr = map(s-> s/sum(pr),pr)  # Vector of fractions of each strategy in the total population
     q = probVec(population,N)  # Vector of choice probabilities for each strategy
     
-    x = pr[1]/(pr[1]+pr[2])
-    y = pr[3]/(pr[3]+pr[4])
-    u = (pr[2]*q[1]-pr[1]*q[2])/(pr[1]+pr[2])
-    z = (pr[4]*q[3]-pr[3]*q[4])/(pr[3]+pr[4])
-    # u = (q[1]-q[2])/(pr[1]+pr[2])
-    # z = (q[3]-q[4])/(pr[3]+pr[4])
+    x = pr[1]/(pr[1]+pr[2])  # x position
+    y = pr[3]/(pr[3]+pr[4])  # y position
+    u = (pr[2]*q[1]-pr[1]*q[2])/(pr[1]+pr[2]) # x arrow direction
+    z = (pr[4]*q[3]-pr[3]*q[4])/(pr[3]+pr[4]) # y arrow direction
     return [x,y,u,z]
 end
 
-# Simulate populations N times and get average choice probabilities for each profession
+# Simulate populations N times and get average choice probabilities for each agent type
 function probVec(list::Vector{<:Agent}, N::Int)
     fitvec = zeros(4)
     i = 0
     while i < N
         i += 1
-        dummypop = copy(list)
+        dummypop = deepcopy(list) # create a copy of the population so that the original population does not change
         simulate!(dummypop)
         fitvec += getindex.(fitnessVector(list,agentStrategies),2)/N  # Vector fitnesses for all strategies
         # vec += choiceProb(dummypop)/N  # Take averages

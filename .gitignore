@@ -25,3 +25,5 @@ data.csv
 /time-series-orig
 /time-averages-orig
 /comp-stat-orig
+ComEn-Plots.jl
+ComEn-Simulations.jl

@@ -5,10 +5,10 @@ if nworkers() < min(length(Sys.cpu_info()),num_procs)
     addprocs(min(length(Sys.cpu_info()),num_procs) - nworkers())
 end
 
+@everywhere rootdir= "time-series/"
+
 @everywhere using Plots, CSV, Tables
-
 @everywhere include("ComEn-Definitions.jl") # Definitions of our types and methods
-
 @everywhere model = "Baseline"
 
 @everywhere generations = 100000
@@ -22,17 +22,13 @@ params = [
 #= Initial condition =#
 
 @everywhere pop=[
+    # 4 strategies
     # ["CP",20],
     # ["CE",20],
     # ["DP",5],
     # ["DE",5],
 
-    # ["CP",5],
-    # ["CE",20],
-    # ["DP",5],
-    # ["DE",20],
-
-    # # For Figure 7
+    # 5 strategies (PE included)
     ["CP",10],
     ["CE",10],
     ["DP",10],
@@ -49,7 +45,7 @@ params = [
 
 @everywhere function saveTimeSeries(par::Vector{Vector{Any}})
     setParameters(par)
-    fileString = theFile(par)
+    fileString = theFile(par, " ")
     gen=0  # Start counting generations
     data = zeros(generations,length(stratVector))  # This is where the data is stored
 
@@ -59,12 +55,11 @@ params = [
         selection!(population,agentsToRevise,revisionVector)
         data[gen,:]=stats(population)
     end
-    # println(data)
-    subdir = "time-series/time-series-data/"
-    subdir = subdir * "$(length(agentStrategyNames))-strategies/"
+    subdir = "$(rootdir)time-series-data/" * "$(length(agentStrategyNames))-strategies/"
     mkpath(subdir)
-    CSV.write("$(subdir)$(fileString).csv",Tables.table(data))
-    # return data,fileString
+    file = "$(subdir)$(fileString).csv"
+    CSV.write(file,Tables.table(data))
+    println(file)
 end
 
-pmap(saveTimeSeries,params)
+pmap(saveTimeSeries,params);

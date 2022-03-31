@@ -7,17 +7,14 @@ if nworkers() < min(length(Sys.cpu_info()),num_procs)
     addprocs(min(length(Sys.cpu_info()),num_procs) - nworkers())
 end
 
+rootdir= "fishtanks/"
 
 # Distribute definitions to worker threads
-@everywhere include("ComEn-Definitions.jl") # Definitions of our types and methods
-
-
-
 # How many times to sample for each point?
-@everywhere N = 1000  # 500
+@everywhere N = 1000
 
+@everywhere include("ComEn-Definitions.jl") # Definitions of our types and methods
 @everywhere model = "Baseline"
-
 
 for parameters in [
     [["f",.3],["l",3.5]],  # Most favorable to cooperation
@@ -51,8 +48,8 @@ for parameters in [
 
     results = pmap(calcArrow,pops)
     
-    subdir = "fishtanks/fishtank-data-trial"
+    subdir = "$(rootdir)fishtank-data/"
     mkpath(subdir)
-    fileString = theFile(parameters," ")
-    CSV.write("$(subdir)/$(fileString).csv",Tables.table(mapreduce(permutedims, vcat, results)))
+    file = subdir * theFile(parameters," ") * ".csv"
+    CSV.write(file,Tables.table(mapreduce(permutedims, vcat, results)))
 end

@@ -20,4 +20,8 @@ ComEn-Arrows.jl
 ComEn-TimeAvg.jl
 ComEn-ParametersAnalytical.jl
 data.csv
-THE-FIGURES/fig-print.tex
+/THE-FIGURES
+/fishtanks-orig
+/time-series-orig
+/time-averages-orig
+/comp-stat-orig

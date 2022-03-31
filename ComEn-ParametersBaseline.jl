@@ -22,7 +22,7 @@ p = 2.  # Producer's loss from being punished
 
 # Attack
 ψ = .7  # Proportion of surplus plundered
-l = 3.  # Loss for being attacked ***( l < 2(τ w -v) - f )***
+l = 3.  # Loss for being attacked
 
 #--------------------MISTAKE PROBABILITIES-------------------------------------
 μ = 0.02  # mistakes for action implementation
@@ -56,8 +56,5 @@ pop=[
     ["DP",20],
     ["CE",5],
     ["DE",5],
-    # ["clairvoyant",50],
-    # ["aggressor",10],
-    # ["clubby",10]
     ]
 #-----------------------------------------------------------------------------

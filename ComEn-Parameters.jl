@@ -19,7 +19,7 @@ p = 2.  # Producer's loss from being punished
 
 # Attack
 ψ = .25  # Proportion of surplus plundered
-l = 2.  # Loss for being attacked ***( l < 2(τ w -v) - f )***
+l = 2.  # Loss for being attacked
 
 #--------------------MISTAKE PROBABILITIES-------------------------------------
 μ = 0.  # mistakes for action implementation

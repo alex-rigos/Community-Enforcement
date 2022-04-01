@@ -1,5 +1,4 @@
-using Plots
-using CSV, Tables
+using CSV, Tables, LaTeXStrings
 
 include("../ComEn-Definitions.jl")
 include("../ColorDefinitions.jl")

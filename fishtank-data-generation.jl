@@ -1,5 +1,5 @@
 using Distributed
-using CSV, Tables, Plots
+using CSV, Tables
 
 # How many threads should be used for parallel computing?
 num_procs = 8

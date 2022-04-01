@@ -1,6 +1,4 @@
-using Plots
-using Statistics
-using CSV, Tables, Latexify, LaTeXStrings,ColorSchemes
+using CSV, Tables, LaTeXStrings
 
 rootdir = "fishtanks/"
 

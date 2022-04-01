@@ -37,7 +37,8 @@ for num_strat in [4,5]
         plot!(title=subfig_label,titlelocation=:left,titlefont=font("Computer Modern",13))
         plot!(size=(440,220)) # Alternatively: plot!(size=(440,330))
         mkpath(subdirwrite)
-        println(writefileString)
-        savefig("$(subdirwrite)$(writefileString).pdf")
+        file = subdirwrite * writefileString * ".pdf"
+        savefig(file)
+        println(file)
     end
 end

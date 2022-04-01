@@ -5,9 +5,9 @@ if nworkers() < min(length(Sys.cpu_info()),num_procs)
     addprocs(min(length(Sys.cpu_info()),num_procs) - nworkers())
 end
 
-@everywhere rootdir= "time-series/"
+@everywhere rootdir= "time-series-and-averages/"
 
-@everywhere using Plots, CSV, Tables
+@everywhere using CSV, Tables
 @everywhere include("ComEn-Definitions.jl") # Definitions of our types and methods
 @everywhere model = "Baseline"
 
@@ -19,21 +19,21 @@ params = [
     [["f",.5],["l",2.5]],  # Most favorable to defection
 ]
 
-#= Initial condition =#
+#= Initial condition (code needs to be run separately for each initial condition)=#
 
 @everywhere pop=[
-    # 4 strategies
-    # ["CP",20],
-    # ["CE",20],
-    # ["DP",5],
-    # ["DE",5],
+    # 4 strategies (without PE)
+    ["CP",20],
+    ["CE",20],
+    ["DP",5],
+    ["DE",5],
 
     # 5 strategies (PE included)
-    ["CP",10],
-    ["CE",10],
-    ["DP",10],
-    ["DE",10],
-    ["PE",10],
+    # ["CP",10],
+    # ["CE",10],
+    # ["DP",10],
+    # ["DE",10],
+    # ["PE",10],
 ]
 
 @everywhere agentStrategyNames = map(x->x[1],pop)
@@ -58,8 +58,8 @@ params = [
     subdir = "$(rootdir)time-series-data/" * "$(length(agentStrategyNames))-strategies/"
     mkpath(subdir)
     file = "$(subdir)$(fileString).csv"
-    CSV.write(file,Tables.table(data))
-    println(file)
+    CSV.write(file,Tables.table(data));
+    println(file);
 end
 
 pmap(saveTimeSeries,params);

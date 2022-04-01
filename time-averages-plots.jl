@@ -1,14 +1,13 @@
 using CSV, Tables
-using Vega, ColorSchemes, ColorBrewer,LaTeXStrings
 include("ComEn-Definitions.jl")
 include("ColorDefinitions.jl")
 
-rootdir = "time-series/"
+rootdir = "time-series-and-averages/"
 
 gr()
 for num_strat in [4,5]
     subdirread = "$(rootdir)time-series-data/" * "$(num_strat)-strategies/"
-    subdirwrite = "$(rootdir)time-aveages-plots/" * "$(num_strat)-strategies/"
+    subdirwrite = "$(rootdir)time-averages-plots/" * "$(num_strat)-strategies/"
 
     params = [
         [["f",.5],["l",2.5]],  # Most favorable to defection
@@ -33,7 +32,7 @@ for num_strat in [4,5]
             ytickfontfamily="Computer Modern",guidefontsize=15,tickfontsize=12)
             plot!(size=(440,220)) # Alternatively: plot!(size=(440,330))
             mkpath(subdirwrite)
-            file = "$(subdirwrite)$(writefileString).pdf"
+            file = subdirwrite * writefileString * ".pdf"
             savefig(file)
             println(file)
         end

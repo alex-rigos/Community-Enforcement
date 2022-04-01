@@ -1,9 +1,9 @@
 using CSV, Tables
-using ColorSchemes, LaTeXStrings, Measures
+using Measures, LaTeXStrings
 include("ComEn-Definitions.jl")
 include("ColorDefinitions.jl")
 
-rootdir = "time-series/"
+rootdir = "time-series-and-averages/"
 
 gr()
 for num_strat in [4,5]

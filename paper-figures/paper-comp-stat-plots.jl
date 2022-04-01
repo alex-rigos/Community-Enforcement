@@ -1,6 +1,5 @@
-using Plots
-using Statistics
-using CSV, Tables
+using CSV, Tables, LaTeXStrings
+# using StatsBase
 include("../ComEn-Definitions.jl")
 include("../ColorDefinitions.jl")
 ranges = [
@@ -56,10 +55,10 @@ for ran in ranges
         append!(xCE, mean(map(i->df[i,2]/(df[i,2]+df[i,4]),1:len)))
         append!(xP, mean(map(i->(df[i,1]+df[i,3])/(sum(df[i,:])),1:len)))
         
-        # For standard deviations
-        append!(sCP, Statistics.std(map(i->df[i,1]/(df[i,1]+df[i,3])/sqrt(len),1:len)))
-        append!(sCE, Statistics.std(map(i->df[i,2]/(df[i,2]+df[i,4])/sqrt(len),1:len)))
-        append!(sP, Statistics.std(map(i->(df[i,1]+df[i,3])/(sum(df[i,:]))/sqrt(len),1:len)))
+        # For standard deviations (requires Statistics)
+        # append!(sCP, Statistics.std(map(i->df[i,1]/(df[i,1]+df[i,3])/sqrt(len),1:len)))
+        # append!(sCE, Statistics.std(map(i->df[i,2]/(df[i,2]+df[i,4])/sqrt(len),1:len)))
+        # append!(sP, Statistics.std(map(i->(df[i,1]+df[i,3])/(sum(df[i,:]))/sqrt(len),1:len)))
         append!(y,[xCP,xCE,xP,sCP,sCE,sP])
     end
    

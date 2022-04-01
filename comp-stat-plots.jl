@@ -1,6 +1,4 @@
-using Plots
-using Statistics
-using CSV, Tables, LaTeXStrings,ColorSchemes
+using CSV, Tables, LaTeXStrings
 include("ComEn-Definitions.jl")
 include("ColorDefinitions.jl")
 ranges = [

@@ -1,6 +1,5 @@
 using Distributed
-using Plots, Statistics
-using CSV, Tables, Latexify, LaTeXStrings
+using CSV, Tables
 
 num_procs = 8
 if nworkers() < min(length(Sys.cpu_info()),num_procs)
@@ -10,8 +9,7 @@ end
 @everywhere include("ComEn-Definitions.jl") # Definitions of our types and methods
 @everywhere model = "Baseline" # Choose which file parameters are read from. They are read from "ComEn-Parameters$(model)"
 
-# @everywhere generations = 100000
-@everywhere generations = 10
+@everywhere generations = 100000
 
 rootdir = "comp-stat/"  # Directory where data is stored
 

@@ -1,5 +1,5 @@
 using CSV, Tables
-using Vega, ColorSchemes, ColorBrewer,LaTeXStrings
+
 include("../ComEn-Definitions.jl")
 include("../ColorDefinitions.jl")
 

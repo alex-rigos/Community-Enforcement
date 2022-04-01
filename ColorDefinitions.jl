@@ -1,3 +1,4 @@
+using ColorSchemes
 col = map(i->ColorSchemes.Paired_12[((2*i)-1)],[4,3,2,1,5]);
 diagramcol = map(i->ColorSchemes.Paired_12[((2*i)-1)],[4,3,2,1,5]);
 

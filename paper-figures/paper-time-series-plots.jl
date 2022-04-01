@@ -1,5 +1,5 @@
 using CSV, Tables
-using ColorSchemes, LaTeXStrings,Measures
+using Measures, LaTeXStrings
 include("../ComEn-Definitions.jl")
 include("../ColorDefinitions.jl")
 gr()

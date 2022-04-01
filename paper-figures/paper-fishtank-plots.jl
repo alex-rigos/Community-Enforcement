@@ -1,6 +1,5 @@
 using Plots
-using Statistics
-using CSV, Tables, Latexify, LaTeXStrings,ColorSchemes
+using CSV, Tables
 
 include("../ComEn-Definitions.jl")
 include("../ColorDefinitions.jl")
@@ -35,7 +34,6 @@ for i in 1:3
 
     # Scale down the arrows (adjust so that they don't overlap)
     scale = 10
-    # paramString = string("l=$(l) f=$(f)")
     
     # plotly()
     pgfplotsx()
@@ -59,10 +57,10 @@ for i in 1:3
     #=========================#
 
     #==== Fast Alternative ===#
-    Plots.plot!(xx, yy, quiver=(uu/scale,zz/scale),xlims=[0,1],ylims=[0,1],
-    arrow=:big, thickness_scaling=1,
-    legend=false,color=arrowcol, seriestype = :quiver,aspect_ratio=:equal,linewidth=1.3,tickfontfamily="Computer Modern")
-    plot!(title=subfig_label,titlelocation=:left,titlefont=font("Helvetica"))
+    # Plots.plot!(xx, yy, quiver=(uu/scale,zz/scale),xlims=[0,1],ylims=[0,1],
+    # arrow=:big, thickness_scaling=1,
+    # legend=false,color=arrowcol, seriestype = :quiver,aspect_ratio=:equal,linewidth=1.3,tickfontfamily="Computer Modern")
+    # plot!(title=subfig_label,titlelocation=:left,titlefont=font("Helvetica"))
     #=========================#
     plot!(size=(440,440))
     # Plots.plot!(xlabel=L"{n_{CP}}/{n_P}")

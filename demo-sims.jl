@@ -1,8 +1,9 @@
+using CSV, Tables
 include("ComEn-Definitions.jl") # Definitions of our types and methods
 include("demo-params.jl") # Parameters for the simulation
 
 dir = "demo/"
-mkdir(dir)
+mkpath(dir)
 
 #  Check that parameters do not give negative payoffs
 warning()
@@ -14,23 +15,21 @@ agentStrategies = map(x->stratByName(x[1],allStrategies),pop)
 data = zeros(generations,length(stratVector))  # This is where the data is stored
 
 gen=0  # Start counting generations
-while gen<generations
-    global gen += 1
+for gen = 1:generations
     if gen%1000==0
         println("Generation $(gen)")
     end
     simulate!(population)
     selection!(population,agentsToRevise,revisionVector)
-    if gen%1000==0
-        println(stats(population))
-    end
+    # if gen%1000==0
+    #     println(stats(population))
+    # end
     data[gen,:]=stats(population)
 end
 
 CSV.write("$(dir)demo-data.csv",Tables.table(data))
 
 #=== Time series plot ===#
-using Plots
 include("ColorDefinitions.jl")
 
 t = 1:generations

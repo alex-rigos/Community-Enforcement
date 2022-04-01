@@ -1,17 +1,21 @@
 include("ComEn-Definitions.jl") # Definitions of our types and methods
 include("demo-params.jl") # Parameters for the simulation
 
+dir = "demo/"
+mkdir(dir)
+
 #  Check that parameters do not give negative payoffs
 warning()
 #==================SIMULATION CODE=========================#
 population = makePopulation(pop)  # Initialize population
 agentStrategyNames = map(x->x[1],pop)
 agentStrategies = map(x->stratByName(x[1],allStrategies),pop)
-gen=0  # Start counting generations
+
 data = zeros(generations,length(stratVector))  # This is where the data is stored
 
+gen=0  # Start counting generations
 while gen<generations
-    gen += 1
+    global gen += 1
     if gen%1000==0
         println("Generation $(gen)")
     end
@@ -23,7 +27,7 @@ while gen<generations
     data[gen,:]=stats(population)
 end
 
-CSV.write("demo-data.csv",Tables.table(data))
+CSV.write("$(dir)demo-data.csv",Tables.table(data))
 
 #=== Time series plot ===#
 using Plots
@@ -36,7 +40,7 @@ stratVector1 = stratVector[setdiff(1:end,notIncluded)]
 
 #areaplot(t,dataToPlot1,label=reshape(stratVector1,1,length(stratVector1)),stacked=true,normalized=false,legend=:bottomright)
 areaplot(t,data1,label=reshape(stratVector1,1,length(stratVector1)),normalized=false,legend=:bottomright,seriescolor=mycolors)
-savefig("demo-evo.pdf")
+savefig("$(dir)demo-evo.pdf")
 
 #=== Average population plots ===#
 avg = mean(eachrow(data1))
@@ -46,4 +50,4 @@ bar(reshape(stratVector1,1,num_strat),reshape(avg/sum(data[1,:]),1,num_strat),
         ytickfontfamily="Computer Modern",guidefontsize=15,tickfontsize=12
     )
 
-savefig("demo-avg.pdf")
+savefig("$(dir)demo-avg.pdf")

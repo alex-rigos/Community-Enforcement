@@ -6,7 +6,7 @@ This software is meant to support the research paper "Emergence of Specialised T
 2. [Installagtion guide](#2-installation-guide)
 3. [Demo](#3-demo)
 4. [Instructions for use](#4-instructions-for-use)
-5. [Replication code for the paper's figures](#5-replication-code-for-the-papers-code)
+5. [Replication code for the paper's figures](#5-replication-code-for-the-papers-figures)
 
 ## 1. System requirements
 

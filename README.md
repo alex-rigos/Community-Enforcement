@@ -38,10 +38,12 @@ If you do not have access to a terminal, navigate to  <https://github.com/alex-r
 3. Install Julia dependencies:
 
     1. From the terminal
+
     ```shell
     $ julia install.js
     ```
     2. or from the Julia REPL
+    
     ```shell
     $ julia> install.js
     ```

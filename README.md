@@ -1,7 +1,15 @@
 # Emergence of Specialised Third-Party Enforcement
 ## Overview
 This software is meant to support the research paper "Emergence of Specialised Third-Party Enforcement" by Erik Mohlin, Alexandros Rigos, and Simon Weidenholzer. It contains the tools that were used to produce the simulations and figures for the paper, as well as a demo script.
+
+1. [System requirements](#system-requirements)
+2. [Installagtion guide](#installation-guide)
+3. [Demo](#demo)
+4. [Instructions for use](#instructions-for-use)
+5. [Replication code for the paper's figures](#replication-code-for-the-paper's-code)
+
 ## 1. System requirements
+
 ### Hardware requirements
 The software only requires a standard computer.
 
@@ -10,8 +18,8 @@ The code is written in the [Julia](https://julialang.org/) language (v1.7).
 ### OS Requirements
 The software should be able to run on all major operating systems. It has been tested on the following systems:
 
-* macOS: Catalina (10.15.7)
-* Windows 11 (version 21H2)
+ * macOS: Catalina (10.15.7)
+ * Windows 11 (version 21H2)
 
 ### Julia dependencies
 
@@ -27,7 +35,8 @@ The software should be able to run on all major operating systems. It has been t
 * Random
 
 ## 2. Installation Guide:
-### 2.1. Instructions
+
+ ### 2.1. Instructions
 1. Download and install the Julia language from <https://julialang.org/>
 2. Download the software from github and move to the installation directory. If you use `git` and have access to a terminal, you can use the following commands to do that.
 ```shell
@@ -47,7 +56,7 @@ If you do not have access to a terminal, navigate to  <https://github.com/alex-r
     ```
 
 ### 2.2. Typical installation time
-After installing Julia, the installation of the required dependencies takets about 80 seconds.
+  After installing Julia, the installation of the required dependencies takets about 80 seconds.
 ## 3. Demo
 ### 3.1. Instructions
 #### 3.1.1. Set model and simulation parameters

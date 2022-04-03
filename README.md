@@ -1,6 +1,6 @@
 # Emergence of Specialised Third-Party Enforcement
 ## Overview
-This software is meant to support the research paper "Emergence of Specialised Third-Party Enforcement" by Erik Mohlin, Alexandros Rigos, and Simon Weidenholzer. It contains the tools that were used to produce the simulations and figures for the paper, as well as a demo script.
+This software is meant to support the research paper "Emergence of Specialised Third-Party Enforcement" by Erik Mohlin, Alexandros Rigos, and Simon Weidenholzer. It contains the tools that were used to produce the simulations and figures for the paper, as well as a demo script. All function definitions are found in `ComEn-Definitions.jl`.
 
 1. [System requirements](#1-system-requirements)
 2. [Installagtion guide](#2-installation-guide)

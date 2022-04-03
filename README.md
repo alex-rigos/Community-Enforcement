@@ -34,7 +34,7 @@ The software should be able to run on all major operating systems. It has been t
 * Distributed
 * Random
 
-## 2. Installation Guide:
+## 2. Installation guide:
 
  ### 2.1. Instructions
 1. Download and install the Julia language from <https://julialang.org/>

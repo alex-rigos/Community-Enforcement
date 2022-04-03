@@ -109,11 +109,11 @@ Run the script `comp-stat-plots.jl`. This will create the folder `comp-stat/comp
 ## 5. Replication code for the paper's figures
 Replicate the paper's figures:
 1. From the terminal
-```
+```shell
 $ julia paper-figures-replication.jl
 ```
 2. or from the Julia REPL 
-```
+```shell
 julia> include("paper-figures-replication.jl")
 ```
 

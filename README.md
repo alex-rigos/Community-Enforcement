@@ -43,7 +43,7 @@ The software should be able to run on all major operating systems. It has been t
 $ git clone https://github.com/alex-rigos/Community-Enforcement
 $ cd Community-Enforcement
 ```
-If you do not have access to a terminal, navigate to  <https://github.com/alex-rigos/Community-Enforcement>, click on the Code button, and select `Download ZIP` to download the ZIP file. Then, unzip the file and navigate to the `Community-Enforcement` folder.
+If you do not have access to a terminal, navigate to  <https://github.com/alex-rigos/Community-Enforcement>, click on the green `Code` button, and select `Download ZIP` to download the ZIP file. Then, unzip the file and navigate to the `Community-Enforcement` folder.
 
 3. Install Julia dependencies:
     1. From the terminal

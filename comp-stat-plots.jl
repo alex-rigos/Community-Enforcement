@@ -38,7 +38,7 @@ for ran in ranges
 
     rootdir = "comp-stat/"
     readdir = "$(rootdir)comp-stat-data/$(parameter)/"
-    writedir = "$(rootdir)comp-stat-figures/"
+    writedir = "$(rootdir)comp-stat-plots/"
 
     xCP = []
     xCE = []

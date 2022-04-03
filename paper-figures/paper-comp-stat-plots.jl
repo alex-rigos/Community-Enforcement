@@ -46,7 +46,7 @@ for ran in ranges
     sP = []
     dir = "paper-figures/comp-stat/"
     readdir = dir * "comp-stat-data/"
-    writedir = dir * "comp-stat-figures/"
+    writedir = dir * "comp-stat-plots/"
     y = []
     for val in rang
         df = CSV.File("$(readdir)$(parameter)/$(parameter)=$(val).csv")|> Tables.matrix

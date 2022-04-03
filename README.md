@@ -2,11 +2,11 @@
 ## Overview
 This software is meant to support the research paper "Emergence of Specialised Third-Party Enforcement" by Erik Mohlin, Alexandros Rigos, and Simon Weidenholzer. It contains the tools that were used to produce the simulations and figures for the paper, as well as a demo script.
 
-1. [System requirements](#system-requirements)
-2. [Installagtion guide](#installation-guide)
-3. [Demo](#demo)
-4. [Instructions for use](#instructions-for-use)
-5. [Replication code for the paper's figures](#replication-code-for-the-paper's-code)
+1. [System requirements](#1-system-requirements)
+2. [Installagtion guide](#2-installation-guide)
+3. [Demo](#3-demo)
+4. [Instructions for use](#4-instructions-for-use)
+5. [Replication code for the paper's figures](#5-replication-code-for-the-papers-code)
 
 ## 1. System requirements
 

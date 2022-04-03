@@ -58,11 +58,11 @@ The version of the `demo-params.jl` file provided includes the parameter values 
 #### 3.1.2. Generate simulation data and plots
 After setting the parameter values, you can run a simulation:
 1. From the terminal
-```
+```shell
 $ julia demo-sims.jl
 ```
 2. or from the Julia REPL
-```js
+```shell
 julia> include("demo-sims.jl")
 ```
 

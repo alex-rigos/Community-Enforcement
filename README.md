@@ -66,7 +66,7 @@ The software should be able to run on all major operating systems. It has been t
     ```
 
 ### 2.2. Typical installation time
-  After installing Julia, the installation of the required dependencies takets about 80 seconds.
+  After installing Julia, the installation of the required dependencies takes about 80 seconds.
 ## 3. Demo
 ### 3.1. Instructions
 #### 3.1.1. Set model and simulation parameters

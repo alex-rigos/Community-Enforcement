@@ -14,12 +14,12 @@ This software is meant to support the research paper "Emergence of Specialised T
 The software only requires a standard computer.
 
 ### Software requirements
-The code is written in the [Julia](https://julialang.org/) language (v1.7).
+The code is written in the [Julia](https://julialang.org/) language (v1.7). Moreover, [LaTeX](https://www.latex-project.org/get/) should be installed on the system for the generation of some figures.
 ### OS Requirements
 The software should be able to run on all major operating systems. It has been tested on the following systems:
 
  * macOS: Catalina (10.15.7)
- * Windows 11 (version 21H2)
+ * Windows 10 (OS version 19044.1288)
 
 ### Julia dependencies
 
@@ -38,12 +38,22 @@ The software should be able to run on all major operating systems. It has been t
 
  ### 2.1. Instructions
 1. Download and install the Julia language from <https://julialang.org/>
-2. Download the software from github and move to the installation directory. If you use `git` and have access to a terminal, you can use the following commands to do that.
-```shell
-$ git clone https://github.com/alex-rigos/Community-Enforcement
-$ cd Community-Enforcement
-```
-If you do not have access to a terminal, navigate to  <https://github.com/alex-rigos/Community-Enforcement>, click on the green `Code` button, and select `Download ZIP` to download the ZIP file. Then, unzip the file and navigate to the `Community-Enforcement` folder.
+2. Download the software from github and move to the installation directory. 
+  * If you use `git` and have access to a terminal, you can use the following commands to do that.
+    ```shell
+    $ git clone https://github.com/alex-rigos/Community-Enforcement
+    $ cd Community-Enforcement
+    ```
+  * If you do not have access to a terminal
+    1. Navigate to  <https://github.com/alex-rigos/Community-Enforcement>
+    2. Click on the green `Code` button, and select `Download ZIP` to download the ZIP file.
+    3. Unzip the file. This will create a folder called `Community-Enforcement-master`, where the files are found.
+    4. Open the Julia REPL and navigate it to the `Community-Enforcement-master` folder:
+        ```shell
+        julia> cd("My\\Path\\Community-Enforcement-master")   (On Windows)
+        julia> cd("My/Path/Community-Enforcement-master")   (On Mac/Linux)
+        ```
+        for example.
 
 3. Install Julia dependencies:
     1. From the terminal
@@ -52,7 +62,7 @@ If you do not have access to a terminal, navigate to  <https://github.com/alex-r
     ```
     2. or from the Julia REPL
     ```shell
-    $ julia> install.js
+    julia> include("install.js")
     ```
 
 ### 2.2. Typical installation time

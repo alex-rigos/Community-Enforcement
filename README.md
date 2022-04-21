@@ -103,9 +103,9 @@ Run the script `time-series-data-generation.jl`. This creates a directory tree w
 * Subfolder `4-strategies` contains the data for simulations with the four main strategies of the paper
 * subfolder `5-strategies` contains the data for simulations that also include the Parochial Enforcer strategy
 
-#### 4.1.2. Generation of time-series plots (e.g. fig. 4d-f and 7a-c)
+#### 4.1.2. Generation of time-series plots (e.g. fig. 3d-f and Supplement fig. 3a-c)
 Run the script `time-series-plots.jl`. This will create the folder `time-series/time-series-plots/`, where the figures are stored under appropriately-named directories
-#### 4.1.3. Generation of time-averages plots (e.g. fig. 4g-i and 7d-f)
+#### 4.1.3. Generation of time-averages plots (e.g. fig. 3g-i and Supplement fig. 3d-f)
 Run the script `time-averages-plots.jl`. This will create the folder `time-averages-plots/`, where the figures are stored under appropriately-named directories
 
 ### 4.2. Phase diagrams (aka fishtank plots)
@@ -114,7 +114,7 @@ To generate the data, run the script `fishtank-data-generation.jl`. This will cr
 
 Parameter values are read from the `ComEn-ParametersBaseline.jl` file. The population states for which the calculations are run can be edited in the `fishtank-data-generation.jl` file.
 
-#### 4.2.2. Generation of phase diagram plots (e.g. fig. 4a-c)
+#### 4.2.2. Generation of phase diagram plots (e.g. fig. 3a-c)
 Run the script `fishtank-plots.jl`. This will create the folder `fishtanks/fishtank-plots/`, where the figures are stored for the data found in the `fishtanks/fishtank-data/` folder.
 
 ### 4.3. Comparative statics plots
@@ -122,7 +122,7 @@ Run the script `fishtank-plots.jl`. This will create the folder `fishtanks/fisht
 To generate the data, run the script `comp-stat-data-generation.jl`. This will create data files in subfolders under the directory `comp-stat/comp-stat-data/`. The subfolders are named with the variables for which the comparative statics computation is being conducted.
 
 Parameter values are read from the `ComEn-ParametersBaseline.jl` file. The parameters and parameter values for which the simulations are carried out can be edited in the `comp-stat-data-generation.jl` file.
-#### 4.3.2. Generation of comparative statics plots (e.g. fig. 4a-i)
+#### 4.3.2. Generation of comparative statics plots (e.g. fig. 4 and Supplement fig. 2)
 Run the script `comp-stat-plots.jl`. This will create the folder `comp-stat/comp-stat-plots/`, where the figures are stored for the data found in the `comp-stat/comp-stat-data/` folder.
 
 ## 5. Replication code for the paper's figures

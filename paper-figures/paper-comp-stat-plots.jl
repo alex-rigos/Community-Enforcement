@@ -12,11 +12,8 @@ ranges = [
     ["p",.5:.5:2.5,"loss from being punished",true,:bottom,"(g)"],
     ["τ",.1:.2:.9,"tax rate",true,:bottom,"(h)"],
     ["ψ",.1:.2:.9,"capture from win",true,:bottomleft,"(i)"],
-    ["δ",.1:.2:.9,"continuation probability",true,:bottomright,"(a)"],
-    ["κ",1:5,"number of punishment periods",true,:bottomright,"(b)"],
-    ["μ",.01:.01:.05,"probability of action mistakes",true,:bottomright,"(c)"],
-    ["η",[.01,.1,.15,.2,.25],"logit noise",true,:bottomright,"(d)"],
-    ["ε",0.05:0.05:.25,"probability of revision mistake",true,:bottomright,"(e)"],
+    ["δ",.1:.2:.9,"continuation probability",true,:bottomright,"(j)"],
+    ["κ",1:5,"number of punishment periods",true,:bottomright,"(k)"],
     ["revisionVector",[
         [[Agent,.1],
         [Enforcer,0.3],
@@ -27,7 +24,10 @@ ranges = [
         [[Agent,1.],
         [Enforcer,0.],
         [Producer,0.]]
-    ],"probability of global revision",true,:bottomright,"(f)"]
+    ],"probability of global revision",true,:bottomright,"(l)"],
+    ["μ",.01:.01:.05,"probability of action mistakes",true,:bottomright,"(a)"],
+    ["η",[.01,.1,.15,.2,.25],"logit noise",true,:bottomright,"(b)"],
+    ["ε",0.05:0.05:.25,"probability of revision mistake",true,:bottomright,"(c)"],
 ]
 
 for ran in ranges

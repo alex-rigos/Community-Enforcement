@@ -59,7 +59,7 @@ for i in 1:3
     # Plots.plot!(xx, yy, quiver=(uu/scale,zz/scale),xlims=[0,1],ylims=[0,1],
     # arrow=:big, thickness_scaling=1,
     # legend=false,color=arrowcol, seriestype = :quiver,aspect_ratio=:equal,linewidth=1.3,tickfontfamily="Computer Modern")
-    # plot!(title=subfig_label,titlelocation=:left,titlefont=font("Helvetica"))
+    plot!(title=subfig_label,titlelocation=:left,titlefont=font("Helvetica"))
     #=========================#
     plot!(size=(440,440))
     # Plots.plot!(xlabel=L"{n_{CP}}/{n_P}")

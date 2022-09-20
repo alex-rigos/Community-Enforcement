@@ -14,7 +14,8 @@ Base.@kwdef mutable struct Enforcer <: Agent
 
     # Strategy specification
     strategy::String
-    punishesDefectors::Bool
+    # punishesDefectors::Bool
+    punishesif::Function
     attacksif::Function
 
     # Status tracking
@@ -41,25 +42,84 @@ end
 Base.@kwdef struct Strategy
     strategyName::String
     agentType::Type
-    punishesDefectors::Any = "Producer"  # The default is of a type that gives an error if assigned to the wrong type
+    # punishesDefectors::Any = "Producer"  # The default is of a type that gives an error if assigned to the wrong type
+    punishesif::Any = "Producer"  # The default is of a type that gives an error if assigned to the wrong type
     attacksif::Any = "Producer"  # The default is of a type that gives an error if assigned to the wrong type
     cooperate::Any = "Enforcer"  # The default is of a type that gives an error if assigned to the wrong type
 end
 
+function punishAll(coop::Bool)
+    true
+end
+
+function punishCoop(coop::Bool)
+    coop
+end
+
+function punishDef(coop::Bool)
+    !coop
+end
+
+function punishNone(coop::Bool)
+    false
+end
+
+function attackAll(karma::Int)
+    true
+end
+
+function attackGood(karma::Int)
+    karma==0
+end
+
+function attackBad(karma::Int)
+    karma>0
+end
+
+function attackNone(karma::Int)
+    false
+end
+
 allStrategies = [
     Strategy(strategyName = "CP", agentType = Producer, cooperate = true),  # Cooperative Producer
-    Strategy(strategyName = "CE", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->enf2.karmaI>0),  # Cooperation Enforcer
+    # Strategy(strategyName = "CE", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->enf2.karmaI>0),  # Cooperation Enforcer
     Strategy(strategyName = "DP", agentType = Producer, cooperate = false),  # Defecting Producer
-    Strategy(strategyName = "DE", agentType = Enforcer, punishesDefectors = false, attacksif = enf2::Enforcer->true),  # Defecting Enforcer
-    Strategy(strategyName = "PE", agentType = Enforcer, punishesDefectors = false, attacksif = enf2::Enforcer->enf2.karmaII>0),  # Parochial Enforcer
-    Strategy(strategyName = "AE", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->true),  # Aggressive Enforcer
-    Strategy(strategyName = "clairvoyant", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->!(enf2.strategy=="clairvoyant"||enf2.strategy=="CE")),
+    # Strategy(strategyName = "DE", agentType = Enforcer, punishesDefectors = false, attacksif = enf2::Enforcer->true),  # Defecting Enforcer
+    # Strategy(strategyName = "PE", agentType = Enforcer, punishesDefectors = false, attacksif = enf2::Enforcer->enf2.karmaII>0),  # Parochial Enforcer
+    # Strategy(strategyName = "AE", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->true),  # Aggressive Enforcer
+    # Strategy(strategyName = "clairvoyant", agentType = Enforcer, punishesDefectors = true, attacksif = enf2::Enforcer->!(enf2.strategy=="clairvoyant"||enf2.strategy=="CE")),
+
+    # Never punish
+    Strategy(strategyName = "0000", agentType = Enforcer, punishesif = punishNone, attacksif = attackNone),  # Live and let live
+    Strategy(strategyName = "0001", agentType = Enforcer, punishesif = punishNone, attacksif = attackBad),  # Attack bad
+    Strategy(strategyName = "0010", agentType = Enforcer, punishesif = punishNone, attacksif = attackGood),  # Attack good
+    Strategy(strategyName = "0011", agentType = Enforcer, punishesif = punishNone, attacksif = attackAll),  # Attack all
+    # Punish Defectors
+    Strategy(strategyName = "0100", agentType = Enforcer, punishesif = punishDef, attacksif = attackNone),  # Live and let live
+    Strategy(strategyName = "0101", agentType = Enforcer, punishesif = punishDef, attacksif = attackBad),  # Attack bad
+    Strategy(strategyName = "0110", agentType = Enforcer, punishesif = punishDef, attacksif = attackGood),  # Attack good
+    Strategy(strategyName = "0111", agentType = Enforcer, punishesif = punishDef, attacksif = attackAll),  # Attack all
+    # Punish Cooperators
+    Strategy(strategyName = "1000", agentType = Enforcer, punishesif = punishCoop, attacksif = attackNone),  # Live and let live
+    Strategy(strategyName = "1001", agentType = Enforcer, punishesif = punishCoop, attacksif = attackBad),  # Attack bad
+    Strategy(strategyName = "1010", agentType = Enforcer, punishesif = punishCoop, attacksif = attackGood),  # Attack good
+    Strategy(strategyName = "1011", agentType = Enforcer, punishesif = punishCoop, attacksif = attackAll),  # Attack all
+    # Always punish
+    Strategy(strategyName = "1100", agentType = Enforcer, punishesif = punishAll, attacksif = attackNone),  # Live and let live
+    Strategy(strategyName = "1101", agentType = Enforcer, punishesif = punishAll, attacksif = attackBad),  # Attack bad
+    Strategy(strategyName = "1110", agentType = Enforcer, punishesif = punishAll, attacksif = attackGood),  # Attack good
+    Strategy(strategyName = "1111", agentType = Enforcer, punishesif = punishAll, attacksif = attackAll),  # Attack all
+    # Parochial enforcer
+    # Strategy(strategyName = "PE", agentType = Enforcer, punishesif = punishNone, attacksif = enf2::Enforcer->enf2.karmaII>0),  # Parochial Enforcer
+    Strategy(strategyName = "PE", agentType = Enforcer, punishesif = punishNone, attacksif = attackBad),  # Parochial Enforcer
+    
 ]
 stratVector = map(x->x.strategyName,allStrategies)
 
 function agent(strat::Strategy)
     if strat.agentType == Enforcer
-        Enforcer(strategy = strat.strategyName, punishesDefectors = strat.punishesDefectors, attacksif = strat.attacksif)
+        # Enforcer(strategy = strat.strategyName, punishesDefectors = strat.punishesDefectors, attacksif = strat.attacksif)
+        Enforcer(strategy = strat.strategyName, punishesif = strat.punishesif, attacksif = strat.attacksif)
     elseif strat.agentType == Producer
         Producer(strategy = strat.strategyName, cooperate = strat.cooperate)
     end
@@ -188,9 +248,10 @@ function punishment!(prodList::Vector{Int},enf::Int,list::Vector{<:Agent})
     checkType.(prodList,Ref(Producer),Ref(list))
     checkType(enf,Enforcer,list)
     for prod in prodList
-        producerPerceivedToDefect = list[prod].cooperated == mistake(ρ)
-        enforcerWillingToPunish = list[enf].punishesDefectors == !mistake(probPunishMistake)
-        enforcerPunishesThisProducer = producerPerceivedToDefect && enforcerWillingToPunish
+        enforcerPunishesThisProducer = list[enf].punishesif(list[prod].cooperated == !mistake(ρ)) == !mistake(probPunishMistake)  # ρ is perception mistakes
+        # producerPerceivedToDefect = list[prod].cooperated == mistake(ρ)
+        # enforcerWillingToPunish = list[enf].punishesDefectors == !mistake(probPunishMistake)
+        # enforcerPunishesThisProducer = producerPerceivedToDefect && enforcerWillingToPunish
         if enforcerPunishesThisProducer
             list[prod].payoff -= p
             list[enf].payoff -= v
@@ -205,12 +266,24 @@ function punishment!(prodList::Vector{Int},enf::Int,list::Vector{<:Agent})
     updateKarma!([enf],list)
 end
 
+# Does enf1 attack enf2?
+function attacks(enf1::Int,enf2::Int,list::Vector{<:Agent})
+    checkType.([enf1,enf2],Ref(Enforcer),Ref(list))
+    if list[enf1].strategy =="PE"
+        list[enf1].attacksif(list[enf2].karmaII) == !mistake(probAttackMistake)
+    else
+        list[enf1].attacksif(list[enf2].karmaI) == !mistake(probAttackMistake)
+    end
+end
+
 # Two enforcers who meet each other play the meta-enforcement game
 function interactEnf!(enf1::Int, enf2::Int,list::Vector{<:Agent})
     checkType.([enf1,enf2],Ref(Enforcer),Ref(list))
     # Attack unless enforcer cooperates and opponent needs not be punished
-    attacks1 = list[enf1].attacksif(list[enf2]) == !mistake(probAttackMistake)
-    attacks2 = list[enf2].attacksif(list[enf1]) == !mistake(probAttackMistake)
+    attacks1 = attacks(enf1,enf2,list)
+    attacks2 = attacks(enf2,enf1,list)
+    # attacks1 = list[enf1].attacksif(list[enf2]) == !mistake(probAttackMistake)
+    # attacks2 = list[enf2].attacksif(list[enf1]) == !mistake(probAttackMistake)
     # Check for rule compliance based on actions
     checkRulesStep3!(enf1,attacks1,enf2,list)
     checkRulesStep3!(enf2,attacks2,enf1,list)
@@ -280,10 +353,12 @@ end
 # Apply monitoring costs to enforcers who use punishing strategies
 function monitoringCosts!(list::Vector{<:Agent})
     for agent in 1:length(list)
-        if typeof(list[agent])==Enforcer && list[agent].punishesDefectors
-            list[agent].payoff -= f
+        # Cost for monitoring producers
+        if typeof(list[agent])==Enforcer && (list[agent].punishesif(true)!=list[agent].punishesif(false))
+            list[agent].payoff -= f1
         end
-        if typeof(list[agent])==Enforcer && list[agent].strategy == "PE"
+        # Cost for monitoring enforcers
+        if typeof(list[agent])==Enforcer && (list[agent].attacksif(0)!=list[agent].attacksif(1))
             list[agent].payoff -= f2
         end
     end
@@ -449,7 +524,7 @@ function setParameters(parameter::String,value::Any)
         if parameter == "μ"
             globalMistakeProbability(μ)
         end
-        changef2(f)
+        # changef2(f)
         warning()
 end
 
@@ -463,7 +538,7 @@ function setParameters(params::Vector{Vector{Any}})
             globalMistakeProbability(μ)
         end
     end
-    changef2(f)
+    # changef2(f)
     warning()
 end
 
@@ -500,9 +575,9 @@ function globalMistakeProbability(μ::Real)
 end
 
 # Set the fixed cost for Parochial Enforcers to f * ϕ
-function changef2(f::Real)
-    global f2 = f * ϕ
-end
+# function changef2(f::Real)
+#     global f2 = f * ϕ
+# end
 
 # Function to create filenames
 function theFile(parameters::Vector{Vector{Any}},separator::String)

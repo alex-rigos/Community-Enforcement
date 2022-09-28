@@ -110,9 +110,11 @@ allStrategies = [
     Strategy(strategyName = "1110", agentType = Enforcer, punishesif = punishAll, attacksif = attackGood),  # Attack good
     Strategy(strategyName = "1111", agentType = Enforcer, punishesif = punishAll, attacksif = attackAll),  # Attack all
     # Parochial enforcer
-    # Strategy(strategyName = "PE", agentType = Enforcer, punishesif = punishNone, attacksif = enf2::Enforcer->enf2.karmaII>0),  # Parochial Enforcer
     Strategy(strategyName = "PE", agentType = Enforcer, punishesif = punishNone, attacksif = attackBad),  # Parochial Enforcer
-    
+    # Cooperation enforcer
+    Strategy(strategyName = "CE", agentType = Enforcer, punishesif = punishDef, attacksif = attackBad),  # Attack bad
+    # Defection enforcer
+    Strategy(strategyName = "DE", agentType = Enforcer, punishesif = punishNone, attacksif = attackAll),  # Attack all
 ]
 stratVector = map(x->x.strategyName,allStrategies)
 
@@ -269,10 +271,14 @@ end
 # Does enf1 attack enf2?
 function attacks(enf1::Int,enf2::Int,list::Vector{<:Agent})
     checkType.([enf1,enf2],Ref(Enforcer),Ref(list))
-    if list[enf1].strategy =="PE"
+    if karma == 2 || list[enf1].strategy =="PE"
         list[enf1].attacksif(list[enf2].karmaII) == !mistake(probAttackMistake)
-    else
+    elseif karma == 1 || list[enf1].strategy =="CE"
         list[enf1].attacksif(list[enf2].karmaI) == !mistake(probAttackMistake)
+    elseif list[enf1].attacksif(0)==list[enf1].attacksif(1) # if reputation system not crucial
+        list[enf1].attacksif(list[enf2].karmaI) == !mistake(probAttackMistake)
+    else # if reputation system is crucial but none is defined, give error
+        error("No valid reputation system to use?")
     end
 end
 
@@ -353,13 +359,22 @@ end
 # Apply monitoring costs to enforcers who use punishing strategies
 function monitoringCosts!(list::Vector{<:Agent})
     for agent in 1:length(list)
-        # Cost for monitoring producers
-        if typeof(list[agent])==Enforcer && (list[agent].punishesif(true)!=list[agent].punishesif(false))
-            list[agent].payoff -= f1
-        end
-        # Cost for monitoring enforcers
-        if typeof(list[agent])==Enforcer && (list[agent].attacksif(0)!=list[agent].attacksif(1))
-            list[agent].payoff -= f2
+        if typeof(list[agent])==Enforcer
+            if uniformFixedCost
+                # Cost for monitoring
+                if (list[agent].punishesif(true)!=list[agent].punishesif(false)) || (list[agent].attacksif(0)!=list[agent].attacksif(1))
+                    list[agent].payoff -= f1 + f2
+                end
+            else
+                # Cost for monitoring producers
+                if (list[agent].punishesif(true)!=list[agent].punishesif(false))
+                    list[agent].payoff -= f1
+                end
+                # Cost for monitoring enforcers
+                if (list[agent].attacksif(0)!=list[agent].attacksif(1))
+                    list[agent].payoff -= f2
+                end
+            end
         end
     end
 end

@@ -2,10 +2,11 @@ include("ComEn-Definitions.jl")
 # Random.seed!(3);
 #--------------------------GAME PARAMETERS------------------------------------
 #--Continuation probability--
-δ = 0.9  # With what probability the stage game repeats
+δ = 0.95  # With what probability the stage game repeats
 #--Reputation (bad karma)--
-κ = 10  # For how many rounds does an enforcer who violated the CE standard stay in bad CE standing?
-κ2 = 10  # For how many rounds does an enforcer who violated the PE standard stay in bad PE standing?
+karma = 1 # Which reputation system should be used? 1: CE standing, 2: PE standing, 
+κ = 6  # For how many rounds does an enforcer who violated the CE standard stay in bad CE standing?
+κ2 = 6  # For how many rounds does an enforcer who violated the PE standard stay in bad PE standing?
  
 #---------PAYOFFS------
 #--Production (Prisoner's Dilemma between producers)--
@@ -15,15 +16,16 @@ w = 2.  # baseline payoff
 # Taxation rate
 τ = .3
 # Punishment
-v = 0.1  # (Variable) Cost of punishment to enforcer (per producer she punishes)
+v = 0.05  # (Variable) Cost of punishment to enforcer (per producer she punishes)
 # f = 0.4  # Fixed cost of punishment
+uniformFixedCost = false  # If true, then any enforcer who monitors pays a fixed cost of f1 + f2
 f1 = 0.2 # Fixed cost for monitoring producers
 f2 = 0.2 # Fixed cost for monitoring enforcers
 p = 2.  # Producer's loss from being punished
 
 # Attack
 ψ = .7  # Proportion of surplus plundered
-l = 5.  # Loss for being attacked
+l = 4.  # Loss for being attacked
 
 #--------------------MISTAKE PROBABILITIES-------------------------------------
 μ = 0.02  # mistakes for action implementation
@@ -68,11 +70,11 @@ pop=[
     ["1110",15],
     ["1111",15],
     
-    # ["0101",5],   # Cooperation Enforcers
-    # ["0011",5],   # Defection Enforcers
-    # ["PE",5], # Parochial Enforcers
-    # ["CE",5],   # Cooperation Enforcers
-    # ["DE",5],   # Defection Enforcers
+    # ["CP",130],  # Cooperating Producers
+    # ["DP",130],  # Defecting Producers
+    # ["CE",120],   # Cooperation Enforcers
+    # ["PE",120], # Parochial Enforcers
+    # ["DE",80],   # Defection Enforcers
     ]
 #-----------------------------------------------------------------------------
 # DO NOT DELETE THE NEXT LINE

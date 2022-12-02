@@ -331,7 +331,7 @@ function updateKarma!(enfList::Vector{Int},list::Vector{<:Agent})
             list[enf].karmaI = κ
         end
         if !list[enf].okWithRuleII
-            list[enf].karmaII = κ2
+            list[enf].karmaII = κ
         end
     end
 end
@@ -628,3 +628,30 @@ function circleShape(h,k,r)
     θ = LinRange(0,2*π,100)
     h .+ r*sin.(θ), k .+ r*cos.(θ)
 end
+
+# For plots of averages
+function plotaverages(shares::Vector{Float64}, stratindices::Vector{Int}, ylim::Vector{<:Real}, colors::Vector{RGB{Float64}})
+    n_strat = length(stratindices)
+    if n_strat == 2
+        xlim = [-.5,2.6]
+    else 
+        xlim = :default
+    end
+    stratVector1 = stratVector[stratindices]
+    shares = shares[stratindices]
+    bar(reshape(stratVector1,1,n_strat),reshape(shares,1,n_strat), xlims = xlim,
+        labels = stratVector1,legend = false,ylims=ylim,seriescolor=reshape(colors[stratindices],1,n_strat),
+        ytickfontfamily="Computer Modern",guidefontsize=15,tickfontsize=6,xticks = :all,bar_width=0.8)
+end
+
+function plotaverages(shares::Vector{<:AbstractFloat}, stratindices::Vector{Vector{Int}}, ylim::Vector{Vector{Float64}}, colors::Vector{RGB{Float64}})
+    if !(length(stratindices)==length(ylim)==2)
+        error("Please use exactly two strategy sets and y-boundaries.")
+    end
+    l1 = length(stratindices[1])
+    l2 = length(stratindices[2])
+    plot1 = plotaverages(shares,stratindices[1],ylim[1],colors)
+    plot2 = plotaverages(shares,stratindices[2],ylim[2],colors)
+    plot(plot1,plot2, layout=grid(1,2, widths=(l1/(l1+l2),l2/(l1+l2))))
+end
+

@@ -1,46 +1,44 @@
 include("ComEn-Definitions.jl")
+# Random.seed!(3);
 #--------------------------GAME PARAMETERS------------------------------------
 #--Continuation probability--
 δ = 0.9  # With what probability the stage game repeats
-#--Karma--
-κ = 3  # For how many rounds should a typeI transgressor be attacked?
-κ2 = 3  # For how many rounds should a typeII transgressor be attacked?
+#--Reputation (bad karma)--
+karma = 3 # Which reputation system should be used? 1: CE standing, 2: PE standing, 3: mixed standing (CE+PE+non-standing conditioning strategies only)
+κ = 8  # For how many rounds does an enforcer who violated the CE standard stay in bad CE standing?
  
 #---------PAYOFFS------
-#--Production (PD between producers)--
-b = 4.  # benefit of cooperation to the opponent
+#--Production (Prisoner's Dilemma between producers)--
+b = 4.  # benefit of cooperation to the opponent 4.
 c = 1.  # cost of cooperation to oneself
 w = 2.  # baseline payoff
-# Taxation
+# Taxation rate
 τ = .3
 # Punishment
 v = 0.1  # (Variable) Cost of punishment to enforcer (per producer she punishes)
-f = .4  # Fixed cost of punishment
-ϕ = .5  # Fraction of f that Parochial Enforcers bear (f2 = f * ϕ)
-changef2(f)
+# f = 0.4  # Fixed cost of punishment
+uniformFixedCost = true  # If true, then any enforcer who monitors either producers or enforcers pays a fixed cost of f1 + f2
+f1 = 0.3 # Fixed cost for monitoring producers
+f2 = 0. # Fixed cost for monitoring enforcers
 p = 2.  # Producer's loss from being punished
 
 # Attack
 ψ = .7  # Proportion of surplus plundered
-l = 3.  # Loss for being attacked
+l = 5.  # Loss for being attacked
 
 #--------------------MISTAKE PROBABILITIES-------------------------------------
-μ = 0.02  # mistakes for action implementation
-probProduceMistake = μ
-probPunishMistake = μ
-probAttackMistake = μ
-ρ = 0.0  # enforcers' mistakes for monitoring producers' actions
-
-
+μ = 0.005  # mistakes for action implementation
+probProduceMistake = μ  # mistakes for producers' decisions
+probPunishMistake = μ   # mistakes for enforcers' decision to punish or not
+probAttackMistake = μ   # mistakes for enforcers' decision to attack or not
+ρ = 0.0  # enforcers' mistakes for monitoring producers' actions (in the paper it is set to 0)
 
 #---------------------------EVOLUTION------------------------------------------
-η = .1  # Logit parameter (weight of fitness f is exp(f/η)). For exact best response, set η = 0.
-ε = 0.1  # Mutation probability (probability to choose uniformly randomly)
+# η = .1  # Logit parameter (weight of fitness f is exp(f/η)). For exact best response, set η = 0.
+η = 0.01  # Logit parameter (weight of fitness f is exp(f/η)). For exact best response, set η = 0.
+ε = 0.05  # Mutation probability (probability to choose a strategy uniformly randomly)
 
-
-#------------------ These things don't matter for arrow plots -------------------
-
-# generations = 100000
+# generations = 100000  # Number of periods for the simulation
 
 agentsToRevise = 1  # Number of agents who update their strategy at the end of each generation
 revisionVector = [  # Adjustment process: with what probability do we allow revisions of each type
@@ -48,13 +46,3 @@ revisionVector = [  # Adjustment process: with what probability do we allow revi
     [Enforcer,0.3],
     [Producer,.6]
     ]
-
-#-------------------------INITIALIZATION---------------------------------------
-# Values for population initialization (how many of each type?). Use each type only once.
-pop=[
-    ["CP",20],
-    ["DP",20],
-    ["CE",5],
-    ["DE",5],
-    ]
-#-----------------------------------------------------------------------------

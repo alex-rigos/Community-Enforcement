@@ -630,10 +630,36 @@ function circleShape(h,k,r)
 end
 
 # Create random population
-function createRandomPop()
+function createRandomPop(strats::Vector{String})
+    nstrat = length(strats)
     A = vcat(0,sort(rand(0:50-nstrat,nstrat-1)) + collect(1:nstrat-1),50)
     pv = map(i->A[i]-A[i-1],2:nstrat+1)
-    global population = makePopulation([ [strats[j],pv[j]] for j in 1:nstrat])
+    makePopulation([ [strats[j],pv[j]] for j in 1:nstrat])
+end
+
+function timeSeriesGeneration(strats::Vector{String})
+    global agentStrategies = [stratByName(x,allStrategies) for x in strats]
+    population = createRandomPop(strats)
+    gen=0  # Start counting generations
+    data = zeros(generations+1,length(stratVector))  # This is where the data is stored
+    data[1,:]=stats(population)
+    while gen<generations
+        gen += 1
+        simulate!(population)
+        selection!(population,agentsToRevise,revisionVector)
+        data[gen+1,:]=stats(population)
+    end
+    return data
+end
+    
+function saveData(data::Matrix{<:Number},file::String)
+    CSV.write(file,Tables.table(data));
+    println(file);
+end
+
+function createAndSaveTimeSeries(strats::Vector{String},file::String)
+    data = timeSeriesGeneration(strats)
+    saveData(data,file)
 end
 
 # For plots of averages
@@ -662,3 +688,7 @@ function plotaverages(shares::Vector{<:AbstractFloat}, stratindices::Vector{Vect
     plot(plot1,plot2, layout=grid(1,2, widths=(l1/(l1+l2),l2/(l1+l2))))
 end
 
+function startProcesses(num_procs::Int)
+if nworkers() < min(length(Sys.cpu_info()),num_procs)
+    addprocs(min(length(Sys.cpu_info()),num_procs) - nworkers())
+end

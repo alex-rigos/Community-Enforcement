@@ -629,6 +629,13 @@ function circleShape(h,k,r)
     h .+ r*sin.(θ), k .+ r*cos.(θ)
 end
 
+# Create random population
+function createRandomPop()
+    A = vcat(0,sort(rand(0:50-nstrat,nstrat-1)) + collect(1:nstrat-1),50)
+    pv = map(i->A[i]-A[i-1],2:nstrat+1)
+    global population = makePopulation([ [strats[j],pv[j]] for j in 1:nstrat])
+end
+
 # For plots of averages
 function plotaverages(shares::Vector{Float64}, stratindices::Vector{Int}, ylim::Vector{<:Real}, colors::Vector{RGB{Float64}})
     n_strat = length(stratindices)

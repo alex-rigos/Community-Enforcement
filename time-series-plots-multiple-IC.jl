@@ -1,11 +1,13 @@
 using CSV, Tables
+using Measures, LaTeXStrings
 include("ComEn-Definitions.jl")
 include("ColorDefinitions.jl")
 
+# plotwindow = 1:1000001
+plotwindow = 1:200000
+
 # rootdir = "trial/time-series-and-averages/"
 rootdir= "trial/time-series-and-averages/new-thing/"
-
-indivplots = 1 # Set to 1 to generate plots for individual runs
 
 params = Dict(
     "baseline"=> [["b",4.0],["c",1.0],["f1",0.3],["l",5.0],["v",0.10]],
@@ -35,20 +37,17 @@ for parname in keys(params)
     parString = theFile(par, " ")
     for karma = 1:3
         for nstrat in keys(enfindexlist[karma])
-            enfindices = enfindexlist[karma][nstrat]
+            indices = vcat(1:2,enfindexlist[karma][nstrat])
             subdirread = "$(rootdir)time-series-data/$(parString)/karma $(karma)/$(nstrat)-strategies/"
-            subdirwrite = "$(rootdir)time-averages-plots/$(parString)/karma $(karma)/$(nstrat)-strategies/"
+            subdirwrite = "$(rootdir)time-series-plots/$(parString)/karma $(karma)/$(nstrat)-strategies/"
             mkpath(subdirwrite)
-            shares = Matrix{Float64}(undef,7,length(stratVector))
-            for number = 1:7
+            for number in 1:7
                 fileread = "$(subdirread)run-$(number).csv"
+                filewrite = "$(subdirwrite)run-$(number)-$(plotwindow).pdf"
                 data = CSV.File(fileread)|> Tables.matrix
-                shares[number,:] = mean(map(x->x/sum(x),eachrow(data)))                
-                if indivplots == 1
-                    plotAndSaveTimeAverages(shares[number,:],"$(subdirwrite)run-$(number).pdf",prodindices,enfindices,diagramcol)
-                end
+                
+                plotAndSaveTimeSeries(data,plotwindow,filewrite,indices,diagramcol)
             end
-            plotAndSaveTimeAverages(mean(eachrow(shares)),"$(subdirwrite)AVG.pdf",prodindices,enfindices,diagramcol)
         end
     end
 end

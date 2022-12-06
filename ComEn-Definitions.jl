@@ -1,6 +1,7 @@
 using Random  # For sample(), etc.
 using StatsBase  # For mean()
 using Plots
+using Measures, LaTeXStrings
 
 #=====AGENT TYPES, STRATEGIES AND CONSTRUCTORS==========#
 abstract type Agent end
@@ -688,7 +689,38 @@ function plotaverages(shares::Vector{<:AbstractFloat}, stratindices::Vector{Vect
     plot(plot1,plot2, layout=grid(1,2, widths=(l1/(l1+l2),l2/(l1+l2))))
 end
 
+function plotAndSaveTimeAverages(shares::Vector{<:AbstractFloat},file::String,prodindices,enfindices,colors)
+    plotaverages(shares,[collect(prodindices),collect(enfindices)],[[0,.75],[0.,.25]],colors)
+    savefig(file)
+    println(file)
+end
+
+function plotAndSaveTimeSeries(data::Matrix{<:Number},plotwindow,file::String,indices,colors)
+    s = size(data,1)
+    m = s/100000
+    num_strat = length(indices)
+    areaplot((plotwindow)/1000,data[plotwindow,:],stacked=true,normalized=false,legend=false,
+        seriescolor=reshape(colors[indices],1,num_strat),clip_on=true,thickness_scaling=1.7,
+        tickfontfamily="Computer Modern",guidefontsize=6)
+    # Place axis labels
+    theheight = -10
+    hshift = 5*m
+    annotate!(-(8-log(10,s)) * m * log(10,s),40,text("population",:right,11,"Helvetica",rotation=90))
+    annotate!(49 * m + hshift,theheight,text("period",:right,11,"Helvetica"))
+    annotate!(51 * m + hshift,theheight + .5,text(L"\left.~10^3\right.",:left,10))
+    annotate!(51 * m + hshift,theheight,text(L"\left(\right.",:left,13))
+    annotate!(58 * m + hshift,theheight,text(L"\left.\right)",:left,13))
+    thescale = 1.5
+    plot!(size=(440*thescale,330*thescale))
+    plot!(guidefontsize=6,tickfontsize=10,bottom_margin=3mm)
+    savefig(file)
+    println(file)
+end
+
+
+
 function startProcesses(num_procs::Int)
-if nworkers() < min(length(Sys.cpu_info()),num_procs)
-    addprocs(min(length(Sys.cpu_info()),num_procs) - nworkers())
+    if nworkers() < min(length(Sys.cpu_info()),num_procs)
+        addprocs(min(length(Sys.cpu_info()),num_procs) - nworkers())
+    end
 end

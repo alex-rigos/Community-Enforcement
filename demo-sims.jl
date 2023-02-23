@@ -4,8 +4,10 @@ include("ColorDefinitions.jl")
 rootdir = "demo/"
 mkpath(rootdir)
 
+# How long should the simulation run for?
 generations = 10000
 
+# Which (generation) window should the time series be plotted for?
 plotwindow = 1:10000
 
 stratlist = Dict(
@@ -31,7 +33,7 @@ createAndSaveTimeSeries(strats,datafilename)
 # Time series plots
 gr()
 
-filewrite = "$(rootdir)demo-time-series-$(plotwindow).pdf"
+filewrite = "$(rootdir)demo-time-series.pdf"
 data = CSV.File(datafilename)|> Tables.matrix
 
 plotAndSaveTimeSeries(data,plotwindow,filewrite,indices,mycolors[karma],"")

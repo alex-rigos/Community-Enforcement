@@ -533,9 +533,13 @@ function choiceProb(fitvec::Vector{<:Real})
     return pvec
 end
 
+function loadParameters(model::String)
+    include("$(string("ComEn-Parameters",model,".jl"))") # Parameters for the simulation
+end
+
 # Function to change the values of parameters
 function setParameters(parameter::String,value::Any)
-    include("$(string("ComEn-Parameters",model,".jl"))") # Parameters for the simulation
+    # include("$(string("ComEn-Parameters",model,".jl"))") # Parameters for the simulation
     string_as_varname(parameter,value)
         if parameter == "μ"
             globalMistakeProbability(μ)
@@ -544,35 +548,37 @@ function setParameters(parameter::String,value::Any)
         warning()
 end
 
-function setParameters(params::Vector{Vector{Any}})
-    include("$(string("ComEn-Parameters",model,".jl"))") # Parameters for the simulation
+function setParameters(params::Vector{Any})
     for parPair in params
-        parameter = parPair[1]
-        value = parPair[2]
-        string_as_varname(parameter,value)
-        if parameter == "μ"
-            globalMistakeProbability(μ)
-        end
+        setParameters(parPair[1],parPair[2])    
     end
-    # changef2(f)
     warning()
 end
 
-function setParameters(params::Vector{Any})
-    setParameters([params])
+function setParameters(params::Vector{Vector{Any}})
+    for parPair in params
+        setParameters(parPair[1],parPair[2])    
+    end
+    warning()
 end
+
+# function setParameters(params::Vector{Any})
+#     setParameters(params[1],params[2])
+# end
+
 # For time averages
 
 # Give an initial population and a number of generations. Get the time average of each strategy across generations
-function timeAverage(pop::Vector{Vector{Any}},generations::Int)        
+function timeAverage(population::Vector{<:Agent},generations::Int)        
     gen=0  # Start counting generations
-    data = zeros(generations,length(stratVector))  # This is where the data is stored
-    population = makePopulation(pop)
+    data = zeros(generations+1,length(stratVector))  # This is where the data is stored
+    data[1,:]=stats(population)
+    # population = makePopulation(pop)
     while gen<generations
         gen += 1
         simulate!(population)
         selection!(population,agentsToRevise,revisionVector)
-        data[gen,:]=stats(population)
+        data[gen+1,:]=stats(population)
     end
     return mean(eachrow(data))
 end
@@ -597,6 +603,20 @@ end
 
 # Function to create filenames
 function theFile(parameters::Vector{Vector{Any}},separator::String)
+    toAdd = ""
+    fString = ""
+    for i in 1:length(parameters)
+        par = parameters[i]
+        toAdd="$(par[1])=$(par[2])"
+        if i > 1
+            fString = fString * separator
+        end
+        fString = fString * toAdd
+    end
+    return fString
+end
+
+function theFile(parameters::Vector{Any},separator::String)
     toAdd = ""
     fString = ""
     for i in 1:length(parameters)
@@ -665,54 +685,101 @@ end
 
 # For plots of averages
 function plotaverages(shares::Vector{Float64}, stratindices::Vector{Int}, ylim::Vector{<:Real}, colors::Vector{RGB{Float64}})
+    plotaverages(shares, stratindices, ylim, colors,"")
+end
+
+function plotaverages(shares::Vector{Float64}, stratindices::Vector{Int}, ylim::Vector{<:Real}, colors::Vector{RGB{Float64}},label::String,width::Number,fsize::Number,tsize::Number,gsize::Number)
     n_strat = length(stratindices)
     if n_strat == 2
         xlim = [-.5,2.6]
+    elseif n_strat == 3
+        xlim = [-.5,4.]
     else 
         xlim = :default
     end
     stratVector1 = stratVector[stratindices]
     shares = shares[stratindices]
+    gr()
     bar(reshape(stratVector1,1,n_strat),reshape(shares,1,n_strat), xlims = xlim,
         labels = stratVector1,legend = false,ylims=ylim,seriescolor=reshape(colors[stratindices],1,n_strat),
-        ytickfontfamily="Computer Modern",guidefontsize=15,tickfontsize=6,xticks = :all,bar_width=0.8)
+        tickfontfamily="Computer Modern",guidefontsize=gsize,tickfontsize=tsize,xticks = :all,bar_width=width,titlelocation=:left,titlefont=font("Computer Modern",fsize),title = label)
 end
 
 function plotaverages(shares::Vector{<:AbstractFloat}, stratindices::Vector{Vector{Int}}, ylim::Vector{Vector{Float64}}, colors::Vector{RGB{Float64}})
+    plotaverages(shares, stratindices, ylim, colors,["",""],0.8)
+end
+
+function plotaverages(shares::Vector{<:AbstractFloat}, stratindices::Vector{Vector{Int}}, ylim::Vector{Vector{Float64}}, colors::Vector{RGB{Float64}},labels::Vector{<:String})
     if !(length(stratindices)==length(ylim)==2)
         error("Please use exactly two strategy sets and y-boundaries.")
     end
     l1 = length(stratindices[1])
     l2 = length(stratindices[2])
-    plot1 = plotaverages(shares,stratindices[1],ylim[1],colors)
-    plot2 = plotaverages(shares,stratindices[2],ylim[2],colors)
-    plot(plot1,plot2, layout=grid(1,2, widths=(l1/(l1+l2),l2/(l1+l2))))
+    toadd = 0.
+    fsize = 15
+    tsize = 13
+    gsize = 20
+    vscale = .85
+    if l2 == 16
+        fsize = 13
+        toadd = .03
+        tsize = 11
+        gsize = 15
+        vscale = 1
+    elseif l2 == 3
+        fsize = 15
+        toadd = .1
+        tsize = 13
+        gsize = 20
+        vscale = .85
+    end
+    plot1 = plotaverages(shares,stratindices[1],ylim[1],colors,labels[1],.8,fsize,tsize,gsize)
+    plot2 = plotaverages(shares,stratindices[2],ylim[2],colors,labels[2],0.8,fsize,tsize,gsize)
+    plot(plot1,plot2, layout=grid(1,2, widths=((l1+toadd)/(l1+l2+toadd),l2/(l1+l2+toadd))))
+    thescale = 1.5
+    if l2==2
+        plot!(size=(.55*400*thescale,330*vscale*thescale))
+    elseif l2==16
+        plot!(size=(880,330))
+    elseif l2==3
+        # plot!(size=(.55*400*thescale*1.2,330*vscale*thescale*.65/1.2))
+        plot!(size=(.55*400*thescale*5/4,330*vscale*thescale))
+    end
 end
 
+
 function plotAndSaveTimeAverages(shares::Vector{<:AbstractFloat},file::String,prodindices,enfindices,colors)
-    plotaverages(shares,[collect(prodindices),collect(enfindices)],[[0,.75],[0.,.25]],colors)
+    plotAndSaveTimeAverages(shares,file,prodindices,enfindices,colors,["",""])
+end
+
+function plotAndSaveTimeAverages(shares::Vector{<:AbstractFloat},file::String,prodindices,enfindices,colors,labels)
+    plotaverages(shares,[collect(prodindices),collect(enfindices)],[[0,1.],[0.,.25]],colors,labels)
     savefig(file)
     println(file)
 end
 
-function plotAndSaveTimeSeries(data::Matrix{<:Number},plotwindow,file::String,indices,colors)
-    s = size(data,1)
+function plotAndSaveTimeSeries(data::Matrix{<:Number},plotwindow,file::String,indices,colors,label::String)
+    s = size(plotwindow,1)
     m = s/100000
     num_strat = length(indices)
-    areaplot((plotwindow)/1000,data[plotwindow,:],stacked=true,normalized=false,legend=false,
+    areaplot((plotwindow)/1000,data[plotwindow,indices],stacked=true,normalized=false,legend=false,
         seriescolor=reshape(colors[indices],1,num_strat),clip_on=true,thickness_scaling=1.7,
         tickfontfamily="Computer Modern",guidefontsize=6)
     # Place axis labels
     theheight = -10
     hshift = 5*m
+    adjust =.8
     annotate!(-(8-log(10,s)) * m * log(10,s),40,text("population",:right,11,"Helvetica",rotation=90))
     annotate!(49 * m + hshift,theheight,text("period",:right,11,"Helvetica"))
-    annotate!(51 * m + hshift,theheight + .5,text(L"\left.~10^3\right.",:left,10))
-    annotate!(51 * m + hshift,theheight,text(L"\left(\right.",:left,13))
-    annotate!(58 * m + hshift,theheight,text(L"\left.\right)",:left,13))
+    annotate!(51 * m + hshift,theheight + adjust + .5,text(L"\left.~10^3\right.",:left,10))
+    annotate!(51 * m + hshift,theheight + adjust,text(L"\left(\right.",:left,13))
+    annotate!(58 * m + hshift,theheight + adjust,text(L"\left.\right)",:left,13))
     thescale = 1.5
-    plot!(size=(440*thescale,330*thescale))
+    plot!(size=(440*thescale*(12/11),400*thescale*(44/50)))
     plot!(guidefontsize=6,tickfontsize=10,bottom_margin=3mm)
+    # annotate!(-35,52,text(label,"Computer Modern",:left,13))
+    plot!(title=label,titlelocation=:left,titlefont=font("Computer Modern Bold",11))
+    
     savefig(file)
     println(file)
 end
@@ -723,4 +790,8 @@ function startProcesses(num_procs::Int)
     if nworkers() < min(length(Sys.cpu_info()),num_procs)
         addprocs(min(length(Sys.cpu_info()),num_procs) - nworkers())
     end
+end
+
+function format(array, indices)
+    reshape(array[indices],1,length(indices))
 end

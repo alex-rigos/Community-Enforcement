@@ -11,7 +11,7 @@ rootdir= "fishtanks/"
 
 # Distribute definitions to worker threads
 # How many times to sample for each point?
-@everywhere N = 1000
+@everywhere N = 10
 
 @everywhere include("ComEn-Definitions.jl") # Definitions of our types and methods
 @everywhere model = "Baseline"
@@ -21,7 +21,8 @@ for parameters in [
     [["f",.4],["l",3.]],  # Baseline
     [["f",.5],["l",2.5]],  # Most favorable to defection
 ]
-
+    @everywhere loadParameters(model)
+    @everywhere karma = 1
     @everywhere setParameters($(parameters))
 
     np = 160  # number of producers

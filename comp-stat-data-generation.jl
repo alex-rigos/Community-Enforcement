@@ -10,7 +10,7 @@ startProcesses(8)
 
 @everywhere generations = 1000000
 
-rootdir = "final/comp-stat/"  # Directory where data is stored
+rootdir = "comp-stat/"  # Directory where data is stored
 
 ranges = [  # Parameters and parameter value ranges for which comparative statics should be calculated. The third entry is the label of the x-axis
     ["f1",.6:.1:1.0,"fixed cost of punishment"],

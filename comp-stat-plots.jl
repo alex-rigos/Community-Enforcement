@@ -2,7 +2,7 @@ using CSV, Tables, LaTeXStrings, Statistics
 include("ComEn-Definitions.jl")
 include("ColorDefinitions.jl")
 
-rootdir = "final/comp-stat/"
+rootdir = "comp-stat/"
 
 ranges = [
     ["f1",.1:.1:1.0,"fixed cost of punishment",true,:bottomleft],

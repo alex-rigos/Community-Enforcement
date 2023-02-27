@@ -1,17 +1,17 @@
 include("ComEn-Definitions.jl")
-# Random.seed!(3);
+
 #--------------------------GAME PARAMETERS------------------------------------
 #--Continuation probability--
 δ = 0.9  # With what probability the stage game repeats
 #--Reputation (bad karma)--
-karma = 3 # Which reputation system should be used? 1: CE standing, 2: PE standing, 3: mixed standing (CE+PE+non-standing conditioning strategies only)
+# karma = 3 # Which reputation system should be used? 1: CE standing, 2: PE standing, 3: mixed standing (CE+PE+non-standing conditioning strategies only)
 κ = 8  # For how many rounds does an enforcer who violated the CE standard stay in bad CE standing?
  
 #---------PAYOFFS------
 #--Production (Prisoner's Dilemma between producers)--
 b = 4.  # benefit of cooperation to the opponent 4.
 c = 1.  # cost of cooperation to oneself
-w = 2.  # baseline payoff
+w = 2.  # autarky payoff
 # Taxation rate
 τ = .3
 # Punishment
@@ -38,11 +38,9 @@ probAttackMistake = μ   # mistakes for enforcers' decision to attack or not
 η = 0.01  # Logit parameter (weight of fitness f is exp(f/η)). For exact best response, set η = 0.
 ε = 0.05  # Mutation probability (probability to choose a strategy uniformly randomly)
 
-# generations = 100000  # Number of periods for the simulation
-
 agentsToRevise = 1  # Number of agents who update their strategy at the end of each generation
 revisionVector = [  # Adjustment process: with what probability do we allow revisions of each type
     [Agent,.1],
-    [Enforcer,0.3],
+    [Enforcer,.3],
     [Producer,.6]
     ]

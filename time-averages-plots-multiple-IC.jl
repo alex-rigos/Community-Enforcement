@@ -2,14 +2,13 @@ using CSV, Tables
 include("ComEn-Definitions.jl")
 include("ColorDefinitions.jl")
 
-# rootdir = "trial/time-series-and-averages/"
-rootdir= "trial/time-series-and-averages/new-thing/"
+rootdir= "time-series-and-averages/"
 
 indivplots = 1 # Set to 1 to generate plots for individual runs
 
 params = Dict(
     "baseline"=> [["b",4.0],["c",1.0],["f1",0.3],["l",5.0],["v",0.10]],
-    "worse" => [["b",3.0],["c",2.0],["f1",0.4],["l",4.0],["v",0.20]]
+    "worse" => [["b",3.0],["c",2.0],["f1",0.4],["l",4.0],["v",0.30]],
 )
 
 paramsToAdd = []
@@ -45,10 +44,10 @@ for parname in keys(params)
                 data = CSV.File(fileread)|> Tables.matrix
                 shares[number,:] = mean(map(x->x/sum(x),eachrow(data)))                
                 if indivplots == 1
-                    plotAndSaveTimeAverages(shares[number,:],"$(subdirwrite)run-$(number).pdf",prodindices,enfindices,diagramcol)
+                    plotAndSaveTimeAverages(shares[number,:],"$(subdirwrite)run-$(number).pdf",prodindices,enfindices,mycolors[karma])
                 end
             end
-            plotAndSaveTimeAverages(mean(eachrow(shares)),"$(subdirwrite)AVG.pdf",prodindices,enfindices,diagramcol)
+            plotAndSaveTimeAverages(mean(eachrow(shares)),"$(subdirwrite)AVG.pdf",prodindices,enfindices,mycolors[karma])
         end
     end
 end

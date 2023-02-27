@@ -1,10 +1,9 @@
 # For parallel computing
 using Distributed
+include("ComEn-Definitions.jl") # Definitions of our types and methods
 startProcesses(8)
 
-# @everywhere rootdir= "time-series-and-averages/"
-# @everywhere rootdir= "trial/time-series-and-averages/"
-rootdir= "trial/time-series-and-averages/new-thing/"
+rootdir= "time-series-and-averages/"
 
 @everywhere using CSV, Tables
 @everywhere include("ComEn-Definitions.jl") # Definitions of our types and methods
@@ -15,11 +14,11 @@ rootdir= "trial/time-series-and-averages/new-thing/"
 # Specify parameter combinations
 params = Dict(
     "baseline"=> [["b",4.0],["c",1.0],["f1",0.3],["l",5.0],["v",0.10]],
-    "worse" => [["b",3.0],["c",2.0],["f1",0.4],["l",4.0],["v",0.20]]
+    "worse" => [["b",3.0],["c",2.0],["f1",0.4],["l",4.0],["v",0.30]],
 )
 
-# paramsToAdd = [["ε",0.01]]
-paramsToAdd = []
+paramsToAdd = [["ε",0.01]]
+# paramsToAdd = []
 
 # List strategy sets for each of the three reputation (karma) systems
 stratlist = Vector{Dict}(undef,3)
@@ -35,16 +34,18 @@ stratlist[3] = Dict(
     5=>["CP","CE","DP","DE","PE"]
 )
 
-# for parname in keys(params)
 for parname in keys(params)
+    @everywhere loadParameters(model)
     par = vcat(params[parname],paramsToAdd)
+    println(par)
+    println(typeof(par))
+    setParameters(par)
     @everywhere setParameters($par)
+    
     parString = theFile(par, " ")
-    # for karma = 1:3
-    for karma in [1]
+    for karma = 1:3
         @everywhere karma = $karma
-        # for nstrat in keys(stratlist[karma])
-        for nstrat in [4]
+        for nstrat in keys(stratlist[karma])
             strats = stratlist[karma][nstrat]
             subdir = "$(rootdir)time-series-data/$(parString)/karma $(karma)/$(length(strats))-strategies/"
             mkpath(subdir)

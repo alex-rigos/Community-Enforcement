@@ -6,12 +6,11 @@ include("ColorDefinitions.jl")
 # plotwindow = 1:1000001
 plotwindow = 1:200000
 
-# rootdir = "trial/time-series-and-averages/"
-rootdir= "trial/time-series-and-averages/new-thing/"
+rootdir= "time-series-and-averages/"
 
 params = Dict(
     "baseline"=> [["b",4.0],["c",1.0],["f1",0.3],["l",5.0],["v",0.10]],
-    "worse" => [["b",3.0],["c",2.0],["f1",0.4],["l",4.0],["v",0.20]]
+    "worse" => [["b",3.0],["c",2.0],["f1",0.4],["l",4.0],["v",0.30]],
 )
 
 paramsToAdd = []
@@ -32,21 +31,26 @@ enfindexlist[3] = Dict(
     5=>19:21
 )
 
+# for parname in ["baseline"]
 for parname in keys(params)
     par = vcat(params[parname],paramsToAdd)
     parString = theFile(par, " ")
     for karma = 1:3
+    # for karma in [1,3]
+    # for karma in [1]
         for nstrat in keys(enfindexlist[karma])
+        # for nstrat in [4]
             indices = vcat(1:2,enfindexlist[karma][nstrat])
             subdirread = "$(rootdir)time-series-data/$(parString)/karma $(karma)/$(nstrat)-strategies/"
             subdirwrite = "$(rootdir)time-series-plots/$(parString)/karma $(karma)/$(nstrat)-strategies/"
             mkpath(subdirwrite)
             for number in 1:7
+            # for number in [1]
                 fileread = "$(subdirread)run-$(number).csv"
                 filewrite = "$(subdirwrite)run-$(number)-$(plotwindow).pdf"
                 data = CSV.File(fileread)|> Tables.matrix
                 
-                plotAndSaveTimeSeries(data,plotwindow,filewrite,indices,diagramcol)
+                plotAndSaveTimeSeries(data,plotwindow,filewrite,indices,mycolors[karma],"")
             end
         end
     end

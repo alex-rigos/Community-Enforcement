@@ -23,22 +23,8 @@ labels =Dict(
     [3,"baseline",5]=>["(c)",""],
     [3,"worse",5]=>["(f)",""],
 )
-# labels =Dict(
-#     [1,"baseline",18]=>["(a)","(b)"],
-#     [1,"worse",18]=>["(c)","(d)"],
-#     [1,"baseline",4]=>["(e)","(f)"],
-#     [1,"worse",4]=>["(g)","(h)"],
-#     [2,"baseline",18]=>["(a)","(b)"],
-#     [2,"worse",18]=>["(c)","(d)"],
-#     [2,"baseline",4]=>["(e)","(f)"],
-#     [2,"worse",4]=>["(g)","(h)"],
-#     [3,"baseline",5]=>["(i)","(j)"],
-#     [3,"worse",5]=>["(k)","(l)"],
-# )
 
-# labels = ["",""]
 paramsToAdd = []
-# paramsToAdd = [["ε",0.01]]
 
 # Specify strategy indices for each reputation system selection. THE INDICES ARE DEPENDENT ON THE allStrategies VECTOR!!!
 prodindices = 1:2

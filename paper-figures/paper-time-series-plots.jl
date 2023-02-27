@@ -2,11 +2,9 @@ using CSV, Tables
 using Measures, LaTeXStrings
 include("../ComEn-Definitions.jl")
 include("../ColorDefinitions.jl")
-# plotwindow = 1:1000001
+
 plotwindow = 1:200000
 
-# rootdir = "trial/time-series-and-averages/"
-# rootdir= "trial/time-series-and-averages/new-thing/"
 rootdir= "paper-figures/time-series-and-averages/"
 
 params = Dict(
@@ -19,9 +17,6 @@ label = Dict(
     "worse" => "(f)",
 )
 
-# label = "(a)"
-
-# paramsToAdd = []
 paramsToAdd = [["ε",0.01]]
 
 stringToAdd = ""
@@ -45,13 +40,9 @@ enfindexlist[3] = Dict(
 )
 
 gr()
-# for parname in ["baseline"]
-# for parname in ["worse"]
 for parname in keys(params)
     par = vcat(params[parname],paramsToAdd)
     parString = theFile(par, " ")
-    # for karma = 1:3
-    # for karma in [1,3]
     for karma in [1]
         # for nstrat in keys(enfindexlist[karma])
         for nstrat in [4]
@@ -59,8 +50,6 @@ for parname in keys(params)
             subdirread = "$(rootdir)time-series-data/$(parString)/karma $(karma)/$(nstrat)-strategies/"
             subdirwrite = "$(rootdir)time-series-plots/"
             mkpath(subdirwrite)
-            # for number in 1:7
-            # for number in [4]
             for number in [5]
                 if parname == "baseline"
                     number = 4

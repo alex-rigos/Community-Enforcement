@@ -89,41 +89,44 @@ julia> include("demo-sims.jl")
 ### 3.2. Output
 The script generates three output files, which are placed under the `demo/` folder:
 * `demo-data.csv`: simulation data
-* `demo-evo.pdf`: population evolution period by period
-* `demo-avg.pdf`: strategy averages across all periods
+* `demo-time-series.pdf`: population evolution period by period
+* `demo-time-avg.pdf`: strategy averages across all periods
 
 ### 3.3. Expected run time 
-The demo script takes approximately 30 seconds to execute the first time, as Julia needs to compile the source. After that, the script takes approximately 4 seconds to execute. These numbers are for 1000 period-long simulations. Increasing the number of periods will significantly increase execution time.
+The demo script takes approximately 65 seconds to execute the first time, as Julia needs to compile the source. After that, the script takes approximately 14 seconds to execute. These numbers are for 10,000 period-long simulations. Increasing the number of periods will significantly increase execution time.
 
 ## 4. Instructions for use
-To generate new data and figures like those in the paper, please follow the procedures laid out below. The scripts below use parallel processing to reduce execution time. To set the default parameter values for any of the data generation scripts below, edit the file `ComEn-Parameters.jl` accordingly (and Save). All data-generation scripts below take considerable amounts of time to execute for the default parameter values (up to 30 minutes).
+To generate new data and figures like those in the paper, please follow the procedures laid out below. The scripts below use parallel processing to reduce execution time. To set the default parameter values for any of the data generation scripts below, edit the file `ComEn-ParametersBaseline.jl` accordingly (and Save). All data-generation scripts below take considerable amounts of time to execute for the default parameter values (up to 30 minutes).
 ### 4.1. Time series and time averages plots
 #### 4.1.1. Data generation
-Run the script `time-series-data-generation.jl`. This creates a directory tree with root `time-series/time-series-data/` where the data are stored in files under the appropriate folders:
-* Subfolder `4-strategies` contains the data for simulations with the four main strategies of the paper
-* subfolder `5-strategies` contains the data for simulations that also include the Parochial Enforcer strategy
+Run the script `time-series-data-generation-multiple-IC.jl`. This creates a directory tree with root `time-series-and-averages/time-series-data/` where the data are stored in files under the appropriate folders. The subfolder structure is as follows (in parent -> child order)
+* Parameter list: Parameters and values that differ from the Baseline
+* Reputation system (karma): karma 1 uses the CE reputation system; karma 2 uses the PE reputation system; karma 3 uses the following set of enforcer strategies: $`{CE,PE,DE}`$.
+* Number of strategies: _4 strategies_ includes {CP,DP,CE,DE} under karma 1 and $`{CP,DP,PE,DE}`$ under karma 2. _18 strategies_ includes $`{CP,DP}`$ as well as all the four-binary-digit combinations of enforcer strategies for each of karma 1 and karma 2. _5 strategies_ is only used under karma 3 and includes the strategies $`{CP,DP,CE,PE,DE}`$.
 
-#### 4.1.2. Generation of time-series plots (e.g. fig. 3d-f and Supplement fig. 3a-c)
-Run the script `time-series-plots.jl`. This will create the folder `time-series/time-series-plots/`, where the figures are stored under appropriately-named directories
-#### 4.1.3. Generation of time-averages plots (e.g. fig. 3g-i and Supplement fig. 3d-f)
-Run the script `time-averages-plots.jl`. This will create the folder `time-averages-plots/`, where the figures are stored under appropriately-named directories
+The files containing the data are named `run-(number).csv`, where `number` is used to differentiate between the 7 independent simulations that the code runs.
 
-### 4.2. Phase diagrams (aka fishtank plots)
+#### 4.1.2. Generation of time-series plots (e.g. fig. 3c,f)
+Run the script `time-series-plots-multiple-IC.jl`. This will create the folder `time-series-and-averages/time-series-plots/`, where the figures are stored under appropriately-named directories (see 4.1.1 above).
+#### 4.1.3. Generation of time-averages plots (e.g. fig. 3a,b,d,e and fig. 5a-f)
+Run the script `time-averages-plots-multiple-IC.jl`. This will create the folder `time-series-and-averages/time-averages-plots/`, where the figures are stored under appropriately-named directories (see 4.1.1 above).
+
+### 4.2. Comparative statics plots
 #### 4.2.1. Data generation
+To generate the data, run the script `comp-stat-data-generation.jl`. This will create data files in subfolders under the directory `comp-stat/comp-stat-data/`. The subfolders are named with the variables for which the comparative statics computation is being conducted.
+
+Parameter values are read from the `ComEn-ParametersBaseline.jl` file. The parameters and parameter values for which the simulations are carried out can be edited in the `comp-stat-data-generation.jl` file.
+#### 4.2.2. Generation of comparative statics plots (e.g. fig. 4 and Supplement fig. 2)
+Run the script `comp-stat-plots.jl`. This will create the folder `comp-stat/comp-stat-plots/`, where the figures are stored for the data found in the `comp-stat/comp-stat-data/` folder.
+
+### 4.3. Phase diagrams (aka fishtank plots; not included in the current version of the paper)
+#### 4.3.1. Data generation
 To generate the data, run the script `fishtank-data-generation.jl`. This will create data files in the directory `fishtanks/fishtank-data/`.
 
 Parameter values are read from the `ComEn-ParametersBaseline.jl` file. The population states for which the calculations are run can be edited in the `fishtank-data-generation.jl` file.
 
-#### 4.2.2. Generation of phase diagram plots (e.g. fig. 3a-c)
+#### 4.3.2. Generation of phase diagram plots
 Run the script `fishtank-plots.jl`. This will create the folder `fishtanks/fishtank-plots/`, where the figures are stored for the data found in the `fishtanks/fishtank-data/` folder.
-
-### 4.3. Comparative statics plots
-#### 4.3.1. Data generation
-To generate the data, run the script `comp-stat-data-generation.jl`. This will create data files in subfolders under the directory `comp-stat/comp-stat-data/`. The subfolders are named with the variables for which the comparative statics computation is being conducted.
-
-Parameter values are read from the `ComEn-ParametersBaseline.jl` file. The parameters and parameter values for which the simulations are carried out can be edited in the `comp-stat-data-generation.jl` file.
-#### 4.3.2. Generation of comparative statics plots (e.g. fig. 4 and Supplement fig. 2)
-Run the script `comp-stat-plots.jl`. This will create the folder `comp-stat/comp-stat-plots/`, where the figures are stored for the data found in the `comp-stat/comp-stat-data/` folder.
 
 ## 5. Replication code for the paper's figures
 Replicate the paper's figures:
@@ -137,12 +140,11 @@ julia> include("paper-figures-replication.jl")
 ```
 
 The scipt runs code that generates plots for the data that are found in subfolders under the `paper-figures/` folder (and were used for the paper's figures). These subfolders are
-* `time-series/time-series-data/`
-* `fishtanks/fishtank-data/`
+* `time-series-and-averages/time-series-data/`
 * `comp-stat/comp-stat-data/`
 
 The script creates the following subfolders (under the `paper-figures/` folder) where the generated figures are placed:
-* `time-series/time-series-plots/`
-* `time-averages/time-averages-plots/`
-* `fishtanks/fish-tank-plots/`
+* `time-series-and-averages/time-series-plots/`
+* `time-series-and-averages/time-averages-plots/`
 * `comp-stat/comp-stat-plots/`
+The terms `baseline` and `worse` in the filenames refer to the baseline and the alternative parameter combinations mentioned in the paper, respectively.

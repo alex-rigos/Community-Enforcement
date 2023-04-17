@@ -447,7 +447,7 @@ end
 
 # Reset fitness and reputation
 function cleanSlate!(list::Vector{<:Agent})
-    if @isdefined(staringKarma)
+    if @isdefined(startingKarma)
         stKarma = startingKarma
     else
         stKarma = 0

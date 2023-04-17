@@ -447,11 +447,16 @@ end
 
 # Reset fitness and reputation
 function cleanSlate!(list::Vector{<:Agent})
+    if @isdefined(staringKarma)
+        stKarma = startingKarma
+    else
+        stKarma = 0
+    end
     for agent in 1:length(list)
         list[agent].fitness = 0
         if typeof(list[agent]) == Enforcer
-            list[agent].karmaI = 0
-            list[agent].karmaII = 0
+            list[agent].karmaI = stKarma
+            list[agent].karmaII = stKarma
         end
     end
 end

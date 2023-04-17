@@ -44,3 +44,5 @@ revisionVector = [  # Adjustment process: with what probability do we allow revi
     [Enforcer,.3],
     [Producer,.6]
     ]
+# How much "bad" reputation enforcers enter the round with.    
+startingKarma = 0

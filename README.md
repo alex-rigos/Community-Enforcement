@@ -58,11 +58,11 @@ The software should be able to run on all major operating systems. It has been t
 3. Install Julia dependencies:
     1. From the terminal
     ```shell
-    $ julia install.js
+    $ julia install.jl
     ```
     2. or from the Julia REPL
     ```shell
-    julia> include("install.js")
+    julia> include("install.jl")
     ```
 
 ### 2.2. Typical installation time

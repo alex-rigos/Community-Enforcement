@@ -82,7 +82,6 @@ for karma in [1,3]
             append!(sPE, Statistics.std(map(i->df[i,19]/(df[i,19]+df[i,20]+df[i,21]),1:len))/sqrt(len))
             append!(sP, Statistics.std(map(i->(df[i,1]+df[i,2])/(sum(df[i,:])),1:len))/sqrt(len))
 
-            # append!(y,[xCP,xCE,xPE,xP,sCP,sCE,sPE,sP])
             append!(y,[xCP,xCE,xPE,xP])
         end
         

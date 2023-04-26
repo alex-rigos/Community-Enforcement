@@ -5,39 +5,38 @@ include("ColorDefinitions.jl")
 rootdir = "comp-stat/"
 
 ranges = [
-    # ["f1",.1:.1:1.0,"fixed cost of punishment",true,:bottomleft],
-    # ["v",.0:.05:.5,"variable cost of punishment",true,:bottom],
-    # ["l",1.:1.:8.,"loss from fight",true,:bottomleft],
-    # ["b",2.:1.:6.,"benefit from cooperation",true,:bottomleft],
-    # ["c",.25:.25:3.0,"cost of cooperation",true,:bottom],
-    # ["w",1.:.5:5.,"autarky payoff",true,:bottomleft],
-    # ["p",.5:.5:2.5,"loss from being punished",true,:bottom],
-    # ["τ",.2:.1:.8,"tax rate",true,:bottom],
-    # ["ψ",.1:.2:.9,"capture from win",true,:bottomleft],
-    # ["δ",[0.,0.3,0.6,0.9,0.95],"continuation probability",true,:bottomleft],
-    # ["κ",[1,5,8,10,15],"number of punishment periods",true,:bottomright],
-    # ["μ",.0:.02:.1,"probability of action mistakes",true,:bottomright],
-    # ["η",[.01,.1,1.,5.,10.],"logit noise",true,:bottomright],
-    # ["ε",[0.01,.05,.1,.2,.5],"probability of revision mistake",true,:bottomright],
-    # ["revisionVector",[
-    #     [[Agent,.1],
-    #     [Enforcer,0.3],
-    #     [Producer,.6]],
-    #     [[Agent,.33],
-    #     [Enforcer,0.33],
-    #     [Producer,.34]],
-    #     [[Agent,1.],
-    #     [Enforcer,0.],
-    #     [Producer,0.]]
-    # ],"probability of global revision",true,:bottomright],
+    ["f1",.1:.1:1.0,"fixed cost of punishment",true,:bottomleft],
+    ["v",.0:.05:.5,"variable cost of punishment",true,:bottom],
+    ["l",1.:1.:8.,"loss from fight",true,:bottomleft],
+    ["b",2.:1.:6.,"benefit from cooperation",true,:bottomleft],
+    ["c",.25:.25:3.0,"cost of cooperation",true,:bottom],
+    ["w",1.:.5:5.,"autarky payoff",true,:bottomleft],
+    ["p",.5:.5:2.5,"loss from being punished",true,:bottom],
+    ["τ",.2:.1:.8,"tax rate",true,:bottom],
+    ["ψ",.1:.2:.9,"capture from win",true,:bottomleft],
+    ["δ",[0.,0.3,0.6,0.9,0.95],"continuation probability",true,:bottomleft],
+    ["κ",[1,5,8,10,15],"number of punishment periods",true,:bottomright],
+    ["μ",.0:.02:.1,"probability of action mistakes",true,:bottomright],
+    ["η",[.01,.1,1.,5.,10.],"logit noise",true,:bottomright],
+    ["ε",[0.01,.05,.1,.2,.5],"probability of revision mistake",true,:bottomright],
+    ["revisionVector",[
+        [[Agent,.1],
+        [Enforcer,0.3],
+        [Producer,.6]],
+        [[Agent,.33],
+        [Enforcer,0.33],
+        [Producer,.34]],
+        [[Agent,1.],
+        [Enforcer,0.],
+        [Producer,0.]]
+    ],"probability of global revision",true,:bottomright],
     ["startingKarma",0:8,"initial bad reputation of enforcers",true,:bottomleft],
     ["fullKarma",1:10,"full initial bad reputation of enforcers",false,:bottomleft],
 ]
 
 errorbars = 1 # Choose whether to add error bars
 
-# for karma in [1,3]
-for karma in [3]
+for karma in [1,3]
     
     for ran in ranges
         parameter = ran[1]
@@ -48,8 +47,6 @@ for karma in [3]
 
         readdir = "$(rootdir)comp-stat-data/karma $(karma)/$(parameter)/"
         writedir = "$(rootdir)comp-stat-plots/karma $(karma)/$(parameter)/"
-        # readdir = "$(rootdir)comp-stat-data/$(parameter)/"
-        # writedir = "$(rootdir)comp-stat-plots/"
 
         xCP = []
         xCE = []

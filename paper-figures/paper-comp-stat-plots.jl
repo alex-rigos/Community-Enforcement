@@ -30,8 +30,12 @@ ranges = [
     ["μ",.0:.02:.1,"probability of action mistakes",true,:right, "(a)"],
     ["η",[.01,.1,1.,5.,10.],"logit noise",true,:left, "(b)"],
     ["ε",[0.01,.05,.1,.2,.5],"probability of revision mistake",true,:bottomright, "(c)"],
+    ["startingKarma",0:8,"initial bad reputation of enforcers",true,:bottomleft,"(b)"],
+    ["fullKarma",1:10,"full initial bad reputation of enforcers",false,:bottomleft,"(a)"],
    
 ]
+
+errorbars = 0 # Choose whether to add error bars
 
 for karma in [1,3]
     
@@ -73,10 +77,10 @@ for karma in [1,3]
             append!(xP, mean(map(i->(df[i,1]+df[i,2])/(sum(df[i,:])),1:len))) # Proportion of producers among agents
 
             # For standard deviations (requires Statistics)
-            append!(sCP, Statistics.std(map(i->df[i,1]/(df[i,1]+df[i,2])/sqrt(len),1:len)))
-            append!(sCE, Statistics.std(map(i->df[i,20]/(df[i,19]+df[i,20]+df[i,21])/sqrt(len),1:len)))
-            append!(sPE, Statistics.std(map(i->df[i,19]/(df[i,19]+df[i,20]+df[i,21])/sqrt(len),1:len)))
-            append!(sP, Statistics.std(map(i->(df[i,1]+df[i,2])/(sum(df[i,:]))/sqrt(len),1:len)))
+            append!(sCP, Statistics.std(map(i->df[i,1]/(df[i,1]+df[i,2]),1:len))/sqrt(len))
+            append!(sCE, Statistics.std(map(i->df[i,20]/(df[i,19]+df[i,20]+df[i,21]),1:len))/sqrt(len))
+            append!(sPE, Statistics.std(map(i->df[i,19]/(df[i,19]+df[i,20]+df[i,21]),1:len))/sqrt(len))
+            append!(sP, Statistics.std(map(i->(df[i,1]+df[i,2])/(sum(df[i,:])),1:len))/sqrt(len))
 
             # append!(y,[xCP,xCE,xPE,xP,sCP,sCE,sPE,sP])
             append!(y,[xCP,xCE,xPE,xP])
@@ -108,24 +112,47 @@ for karma in [1,3]
         else
             error("Please use a valid karma value")
         end
+
+        # If using error bars, make series points a bit transparent
+        if errorbars == 1
+            alph = .5
+        else
+            alph = 1
+        end
         
         plot!(rang,y[indices],label=format(names,indices), markershape = format(sh,indices),markersize=format(ms,indices),
         legend = legend_place,linestyle = format(styles,indices),color = format(mycompstatcolors,indices),
         lw = 1.5, ylims = (0, 1),linealpha=1,seriestype=:line, xscale = plotscale,
-        tickfontfamily="Helvetica",guidefontsize=15,tickfontsize=12,titlefont="Courier",legendfontsize=9)
+        tickfontfamily="Helvetica",guidefontsize=15,tickfontsize=12,titlefont="Courier",legendfontsize=9,seriesalpha=alph)
         
+        # Plot error bars
+        if errorbars == 1
+            plot!(rang, xCP,yerror=sCP,label=:none,linewidth=0,linecolor=format(mycompstatcolors,indices)[1])
+            plot!(rang, xCE,yerror=sCE,label=:none,linewidth=0,linecolor=format(mycompstatcolors,indices)[2])
+            if karma == 1
+                plot!(rang, xP,yerror=sP,label=:none,linewidth=0,linecolor=format(mycompstatcolors,indices)[3])
+            elseif karma == 3
+                plot!(rang, xPE,yerror=sPE,label=:none,linewidth=0,linecolor=format(mycompstatcolors,indices)[3])
+                plot!(rang, xP,yerror=sP,label=:none,linewidth=0,linecolor=format(mycompstatcolors,indices)[4])
+            end
+        end
+
         include("../ComEn-ParametersBaseline.jl")
         
         s = Symbol(parameter)
-        theval = eval(s)
         if parameter == "revisionVector"
             theval =.1
+        elseif parameter == "fullKarma"
+            theval = κ
+        else
+            theval = eval(s)
         end
+
         if show_baseline
             plot!([theval],label=L"\textrm{\sffamily baseline}",seriestype=:vline,markersize=0,lw=1,style = :dash,color = "black", xticks = theTicks, minorticks = mticks)
         end
         parametertx = parameter # LaTeX-friendly text to use for the parameter name
-        greeknames = Dict("ψ" => "\\psi", "τ"=>"\\tau","δ" => "\\delta","κ" => "\\kappa","μ" => "\\mu","η" => "\\eta","ε" => "\\varepsilon","revisionVector" => "\\gamma_{P,E}","f1"=>"f")
+        greeknames = Dict("fullKarma" => "\\kappa", "startingKarma" => "","ψ" => "\\psi", "τ"=>"\\tau","δ" => "\\delta","κ" => "\\kappa","μ" => "\\mu","η" => "\\eta","ε" => "\\varepsilon","revisionVector" => "\\gamma_{P,E}","f1"=>"f")
         if parameter in keys(greeknames)
             parametertx = greeknames[parameter]
         end

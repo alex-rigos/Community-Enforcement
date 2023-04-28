@@ -5,7 +5,7 @@ include("ColorDefinitions.jl")
 rootdir = "comp-stat/"
 
 ranges = [
-    ["f1",.1:.1:1.0,"fixed cost of punishment",true,:bottomleft],
+    ["f1",.1:.1:1.0,"fixed cost of information",true,:bottomleft],
     ["v",.0:.05:.5,"variable cost of punishment",true,:bottom],
     ["l",1.:1.:8.,"loss from fight",true,:bottomleft],
     ["b",2.:1.:6.,"benefit from cooperation",true,:bottomleft],

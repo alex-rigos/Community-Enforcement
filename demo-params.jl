@@ -6,7 +6,6 @@ include("ComEn-Definitions.jl")
 #--Reputation (bad karma)--
 karma = 1 # Which reputation system should be used? 1: CE standing, 2: PE standing, 3: mixed standing (CE+PE+non-standing conditioning strategies only)
 κ = 8  # For how many rounds does an enforcer who violated the CE standard stay in bad CE standing?
-κ2 = 8  # For how many rounds does an enforcer who violated the PE standard stay in bad PE standing?
  
 #---------PAYOFFS------
 #--Production (Prisoner's Dilemma between producers)--
@@ -46,3 +45,6 @@ revisionVector = [  # Adjustment process: with what probability do we allow revi
     [Enforcer,0.3],
     [Producer,0.6]
     ]
+
+# How much "bad" reputation enforcers enter the round with.    
+startingKarma = 0

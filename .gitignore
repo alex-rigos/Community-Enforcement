@@ -47,6 +47,7 @@ ComEn-Simulations.jl
 /paper-figures/comp-stat/comp-stat-plots
 /paper-figures/time-series-and-averages/time-averages-plots
 /paper-figures/time-series-and-averages/time-series-plots
+/paper-figures/PNAS
 time-averages-plots.jl
 time-series-plots.jl
 ComEn-Parameters.jl
